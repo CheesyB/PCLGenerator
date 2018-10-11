@@ -2,33 +2,26 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-import stl as mymesh
-import mypymesh as mpm
-import mystl 
+import stl 
 from scipy.spatial import ConvexHull
 
-
-def PyMesh2Stl(target):
-    stlmesh = mymesh.Mesh(np.zeros(target.faces.shape[0], dtype=mymesh.Mesh.dtype))
-    for i, f in enumerate(target.faces):
-        for j in range(3):
-            stlmesh.vectors[i][j] = target.vertices[f[j],:]
-    return stlmesh
+import CustomPyMesh as cpm 
+import CustomStl as cstl 
 
 
 pmin = np.array([0,0,0])
 pmax = np.array([1,3,1])
 roofHeight = 1
 
-vertices = mystl.house(pmin, pmax, roofHeight)
+house_vertices = cstl.house(pmin, pmax, roofHeight)
 
 #from scipy gives back ConvecHull as nx3 array where each column represents a vertex
 simplices = ConvexHull(vertices).simplices
 
-cube = mymesh.Mesh(np.zeros(simplices.shape[0], dtype=mymesh.Mesh.dtype))
+house_stl = stl.mesh.Mesh(np.zeros(simplices.shape[0], dtype=stl.mesh.Mesh.dtype))
 for i, f in enumerate(simplices):
     for j in range(3):
-        cube.vectors[i][j] = vertices[f[j],:]
+        house_stl.vectors[i][j] = house_vertices[f[j],:]
 
 # Write the mesh to file "cube.stl"
 #cube.save('cube.stl')
@@ -46,11 +39,10 @@ h = 0.3
 pmax = np.array([xmax,ymax,zmax])
 pmin = np.array([xmin,ymin,zmin])
 
-swire = mpm.ReturnScaffoldWire(pmin,pmax)
+swire = cpm.ReturnScaffoldWire(pmin,pmax)
+scaffold_mesh = cpm.InfalteWire(swire)
 
-scaffold_mesh = mpm.InfalteWire(swire)
-
-container_mesh = ReturnContainer(pmin,pmax,0.1)
+container_mesh = cpm.ReturnContainer(pmin,pmax,0.1)
 
 
 print('done')
