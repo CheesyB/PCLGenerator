@@ -61,7 +61,7 @@ class Container(object):
     
     def ReturnContainer(self):
         T=utils.TicToc('ReturnContainer')
-        logging.debug('Obacht mit der thickenss, kann zu gross sein')
+        logging.debug('Obacht mit der thickness, kann zu gross sein')
         #Big box minus smaller box inside equals simple container
         boxmesh = pm.generate_box_mesh(self._pmin,self._pmax)
 
@@ -73,7 +73,7 @@ class Container(object):
         union_mesh = pm.boolean(boxmesh, inner_boxmesh,'symmetric_difference',engine="cgal")
         union_mesh = utils.PyMesh2Ply(union_mesh)
         T.toc()
-        return union_mesh
+        return union_mesh 
     
     def SamplePointCloud(self,num=10000,Class=1):
         T = utils.TicToc('SampelPoints from Container')
@@ -93,40 +93,34 @@ class Scaffold(object):
 
     """Docstring for Scaffold. """
 
-    def __init__(self,pmin,pmax,thickenss):
+    def __init__(self,thick):
         """TODO: to be defined1.
 
         :pmin: TODO
         :pax: TODO
 
         """
-        self._pmin = pmin
-        self._pmax = pmax
-        self._thickness = thickness
+        self._thickness = thick
         
 
-
-    def ReturnScaffold(self):
+    def ReturnUnitScaffold(self):
         T=utils.TicToc('ReturnScaffold')
-        pmin = self._pmin
-        pmax = self._pmax
-
-        p0 = pmin 
-        p1 = pmin + np.array([0,0,pmax[2]])
-        p2 = pmin + np.array([pmax[0],0,pmax[2]])
-        p3 = pmin + np.array([pmax[0],0,0])
-       
-        y = np.array([0,pmax[1],0])
-        p4 = p0 + y
-        p5 = p1 + y
-        p6 = p2 + y 
-        p7 = p3 + y 
-
+        
+        p0 = np.array([0,0,0])
+        p1 = np.array([1,0,0])
+        p2 = np.array([1,1,0])
+        p3 = np.array([0,1,0])
+        p4 = np.array([0,0,1])
+        p5 = np.array([1,0,1])
+        p6 = np.array([1,1,1])
+        p7 = np.array([0,1,1])
+        
         vertices = np.vstack((p0,p1,p2,p3,p4,p5,p6,p7))
         edges = np.array([[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4], 
                             [0,2],[1,3],[4,6],[5,7],
                             [0,4],[1,5],[2,6],[3,7],
                             [0,5],[2,7]])
+        
         wire  = pm.wires.WireNetwork.create_from_data(vertices, edges)
         
         inflator = pm.wires.Inflator(wire)
@@ -139,7 +133,7 @@ class Scaffold(object):
 
     def SamplePointCloud(self,num=10000,Class=2):
         T = utils.TicToc('SampelPoints from Scaffold')
-        scaffold = self.ReturnScaffold()
+        scaffold = self.ReturnUnitScaffold()
         npPoints,_ = tri.sample.sample_surface_even(scaffold, num)
         # evaluate lambda with extra parenthesis, put it in extra braces to add dimension
         npClass = np.ones((npPoints.shape[0],1)) * Class

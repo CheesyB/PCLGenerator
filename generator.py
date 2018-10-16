@@ -3,7 +3,7 @@
 
 import numpy as np
 import logging 
-import StlObjects as so
+import PlyObjects as po 
 
 
 xmax = 1

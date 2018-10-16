@@ -44,5 +44,14 @@ def SamplePointCloud(mesh,num):
     return pointcloud 
 
 
+def Translation(vec)
+     
+    translation = np.array([[1,0,0,vec[0]],
+                            [0,1,0,vec[1]],
+                            [0,0,1,vec[2]],
+                            [0,0,0,1]])
+    return translation 
+
+
 if __name__ == "__main__":
     print('nothing to do here')
