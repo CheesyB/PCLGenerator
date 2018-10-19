@@ -8,6 +8,7 @@ import pandas as pa
 import numpy as np
 import matplotlib.pyplot as plt 
 import pyntcloud as pc
+import os, shutil
 from datetime import timedelta
 
 class WrapMesh(object):
@@ -60,7 +61,7 @@ class WrapMesh(object):
         T = TicToc(self.logger,'SampelPointsRGB from {}'.format(self.name))
         npPoints,_ = tri.sample.sample_surface_even(self._mesh,num)
         cmap = plt.get_cmap()
-        self.logger.info('WMesh Class: {}'.format(self._Class))
+        self.logger.debug('Class: {}'.format(self._Class))
         npClass = np.array([cmap(self._Class*100) for _ in range(npPoints.shape[0])])
         npPoints = np.concatenate((npPoints,npClass), axis=1)
         paPoints = pa.DataFrame(columns=['x','y','z','R','G','B','alpha'],data=npPoints)
@@ -125,6 +126,15 @@ def SamplePointCloud(mesh,num):
     T.toc()
     return pointcloud 
 
+def DelFilesInFolder(path2folder):
+    for the_file in os.listdir(path2folder):
+        file_path = os.path.join(path2folder, the_file)
+        try:
+            if os.path.isfile(file_path):
+                os.unlink(file_path)
+            #elif os.path.isdir(file_path): shutil.rmtree(file_path)
+        except Exception as e:
+            print(e)
 
 
 if __name__ == "__main__":

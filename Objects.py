@@ -26,8 +26,8 @@ def Basement(Class):
     upperMesh = utils.WrapMesh('BasementUpper',upper,Class[0])
     lower = tri.intersections.slice_mesh_plane(box,-normal,origin)
     lowerMesh = utils.WrapMesh('BasementLower',lower,Class[1])
-    
-    return (upperMesh,lowerMesh)
+    meshlist = list((upperMesh,lowerMesh))
+    return meshlist 
 
 
     
@@ -52,7 +52,7 @@ def Container(thickness,Class):
     union_mesh = utils.PyMesh2Ply(union_mesh)
     mesh = utils.WrapMesh('Container',union_mesh,Class)
     T.toc()
-    return mesh 
+    return [mesh]
     
 
 
@@ -87,7 +87,7 @@ def Scaffold(thickness,Class):
     mesh = utils.WrapMesh('Scaffold',scaffold,Class)
 
     T.toc()
-    return mesh 
+    return [mesh]
 
 
 
@@ -136,9 +136,7 @@ def House(roofHeight,Classes):
     
     roof = tri.Trimesh(vertices=hull.vertices,faces=hull.faces)
     roofmesh = utils.WrapMesh('roof',roof,Classes[0])
-    meshlist = []
-    meshlist.append(roofmesh)
-    meshlist.append(bodymesh)
+    meshlist = list((roofmesh,bodymesh)) 
     T.toc() 
     return meshlist
    

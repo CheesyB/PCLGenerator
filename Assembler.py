@@ -43,14 +43,14 @@ def ScaffoldFactory(reps,Class=None):
                 if Class is None:
                     rand = np.random.randint(100)
                     tmp = po.Scaffold(thickness,rand)
-                    logger.info('Random Class {} added to wmesh: {}'.format(rand,tmp.name))
+                    logger.info('Random Class {} added to wmesh: {}'.format(rand,tmp[0].name))
                 else:
                     tmp = po.Scaffold(thickness,Class) 
-                    logger.info('Class {} added to wmesh: {}'.format(Class,tmp.name))
+                    logger.info('Class {} added to wmesh: {}'.format(Class,tmp[0].name))
 
-                    
-                tmp._mesh.apply_transform(mat) 
-                scaffolds.append(tmp)
+                tmp[0]._mesh.apply_transform(mat) 
+                tmp[0]._prefix = '{}th_{}th_'.format(i,j)
+                scaffolds.extend(tmp)
     
     
     T.toc() 
