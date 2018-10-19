@@ -61,7 +61,7 @@ def ScaffoldFactory(reps,Class=None):
 
 def HouseWithScaffold(roofHeight,width,reps,Classes):
     
-    logger = logging.getLogger('Assembler.HouseWithScaffold')
+    logger = logging.getLogger('generator.Assembler.HouseWithScaffold')
     T = utils.TicToc(logger)
      
     house = po.House(roofHeight,Classes[:2]) # returns (roof,mesh)
