@@ -19,7 +19,6 @@ def ScaffoldFactory(reps,Class=None):
     T = utils.TicToc(logger)
      
     n = reps[0]*reps[1]*reps[2]
-    logger.info('total of {} scaffolds created'.format(n)) 
     
     scaffolds = []
     thickness = 0.1
@@ -28,10 +27,12 @@ def ScaffoldFactory(reps,Class=None):
     dx = scaling[0][0]
     dy = scaling[1][1]
     dz = scaling[2][2]
-    
+    count = 0 
+
     for i in range(reps[0]):
         for j in range(reps[1]):
             for k in range(reps[2]):
+                count += 1
                 x = i*dx
                 y = j*dy 
                 z = k*dz
@@ -41,18 +42,19 @@ def ScaffoldFactory(reps,Class=None):
                                         [0,0,0,1]])
                 mat = translation.dot(scaling)
                 if Class is None:
-                    rand = np.random.randint(100)
-                    tmp = po.Scaffold(thickness,rand)
-                    logger.info('Random Class {} added to wmesh: {}'.format(rand,tmp[0].name))
+                    theClass = 40+count
+                    tmp = po.Scaffold(thickness,theClass)
+                    logger.info('Random Class {} added to wmesh: {}'.format(theClass,tmp[0].name))
                 else:
                     tmp = po.Scaffold(thickness,Class) 
-                    logger.info('Class {} added to wmesh: {}'.format(Class,tmp[0].name))
+                    logger.debug('Class {} added to wmesh: {}'.format(Class,tmp[0].name))
 
                 tmp[0]._mesh.apply_transform(mat) 
-                tmp[0]._prefix = '{}th_{}th_'.format(i,j)
+                tmp[0]._prefix = 'hws_{}th'.format(count)
                 scaffolds.extend(tmp)
     
     
+    logger.info('total of {} scaffolds created'.format(n)) 
     T.toc() 
     return scaffolds 
 
@@ -65,6 +67,8 @@ def HouseWithScaffold(roofHeight,width,reps,Classes):
     T = utils.TicToc(logger)
      
     house = po.House(roofHeight,Classes[:2]) # returns (roof,mesh)
+    house[0]._prefix = 'hws_'
+    house[1]._prefix = 'hws_'
     
     transl = (1+width,0,0) 
     transf = np.diag([1*0.25,1,1,1])
@@ -101,19 +105,22 @@ if __name__ == "__main__":
     logging.getLogger('utils.PyMesh2Ply').setLevel(logging.CRITICAL)    
     logging.getLogger('trimesh').setLevel(logging.CRITICAL)    
     logging.getLogger('utils.TicToc').setLevel(logging.CRITICAL)    
+
+    utils.DelFilesInFolder('data')
     
-#    scaffold = ScaffoldFactory([2,3,3])
+#    wmeshlist = ScaffoldFactory([2,3,3])
 #    scaffold.SaveMesh()
 #    scaffold.SavePC()
-#    
-    ScaffoldHouseList = ScaffoldTest(0.1,[2,2,2])
+    
+#    wmeshlist(0.1,[2,2,2])
+
+    wmeshlist = HouseWithScaffold(0.7,0.1,[2,2,2],(10,20,None))
 
     i = 0
-    for wmesh in ScaffoldHouseList:
+    for wmesh in wmeshlist:
         i += 1
         logging.debug(' {} mesh'.format(i))
         wmesh._prefix = '{}_Regular_'.format(i)
-        wmesh.SaveMesh()
         wmesh.SavePCRGB()
 
 

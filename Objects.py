@@ -13,6 +13,7 @@ import logging
 
 
 
+
 """ returns two CustoMeshes, Class => (1,2) """
 
 def Basement(Class):
@@ -136,6 +137,7 @@ def House(roofHeight,Classes):
     
     roof = tri.Trimesh(vertices=hull.vertices,faces=hull.faces)
     roofmesh = utils.WrapMesh('roof',roof,Classes[0])
+    
     meshlist = list((roofmesh,bodymesh)) 
     T.toc() 
     return meshlist
@@ -146,10 +148,15 @@ def House(roofHeight,Classes):
 
 
 if __name__ == "__main__":
-    print('Test started')
+    
     logging.basicConfig(level=logging.DEBUG)
+    logging.getLogger('generator').setLevel(logging.INFO)
+    logging.getLogger('trimesh').setLevel(logging.CRITICAL)
+    
     T=utils.TicToc(name='Total')
 
+    utils.DelFilesInFolder('data')    
+    
     roofHeight = 1 
     thickness = 0.1
     
@@ -161,8 +168,8 @@ if __name__ == "__main__":
     house[1].SavePC()
 
     scaffold = Scaffold(thickness,1)
-    scaffold.SaveMesh()
-    scaffold.SavePC()
+    scaffold[0].SaveMesh()
+    scaffold[0].SavePC()
     
     basement = Basement((1,2))
     basement[0].SaveMesh()
@@ -172,8 +179,8 @@ if __name__ == "__main__":
     
 
     container = Container(thickness,1)
-    container.SaveMesh()
-    container.SavePC()
+    container[0].SaveMesh()
+    container[0].SavePC()
     
     T.toc()
 
