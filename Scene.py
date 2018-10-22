@@ -6,14 +6,13 @@ import logging
 import Objects as o
 import Assembler as a
 import trimesh as tri
-import trimesh.transformations as trans
 import utils 
 
 logger = logging.getLogger('generator.Scene')
 logging.getLogger('generator').setLevel(logging.INFO)
 
-uni = np.random.uniform
-norma = np.random.normal
+uni = 
+norma = 
 ar = np.array
 
 origin, xaxis, yaxis, zaxis = [0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]
@@ -23,20 +22,6 @@ axes = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
 Classes = {'Basement':(0,10),'Container':(16),'Scaffold':(35),'House':(40,50),\
         'HouseWithScaffold':(40,50,30)}
 
-def Transform(transl,scale,alpha):
-   
-    """    
-    translationScalar = lambda:  np.random.uniform(0.1,0.8)
-    scaleScalar  = list 
-    alpha = float
-    """
-    S = np.diag(scale)
-    T = trans.translation_matrix(transl)
-    #Z = shear_matrix(beta, xaxis, origin, zaxis)
-    R = trans.rotation_matrix(alpha,zaxis)
-    
-    #return np.eye(4) 
-    return [S,R,T] # Rotationmatix macht Häuser kopfstehend
 
 
 def BasementInit():
@@ -48,8 +33,6 @@ def BasementInit():
 def ContainerInit():
     thickness = uni(0.05,0.05)
     transl = [uni(-1,1),uni(-1,1),0] 
-    scale = [norma(0.2,0.15),norma(0.4,0.1),norma(0.3,0.1),1] 
-    alpha = uni(0,360)
 
     container = o.Container(thickness,Classes['Container'])
     T = Transform(transl,scale,alpha)
@@ -59,7 +42,6 @@ def ContainerInit():
 def ScaffoldInit():
     thickness = uni(0.05,0.15)
     transl = [uni(-1,1),uni(-1,1),0] 
-    scale = [norma(0.35,0.15),norma(0.4,0.1),norma(0.4,0.1),1] 
     alpha = uni(0,360)
     
     scaffold = o.Scaffold(thickness,Classes['Scaffold'])
@@ -85,10 +67,6 @@ def HouseWithScaffoldInit():
     roofHeight = uni(0.7,0.8) 
     
     
-    func = np.random.poisson(lam=1.82)
-    lmb = lambda:  max(min(4, func), 1)
-    reps = [lmb() for _ in range(3)]
-    reps[0] = 1
     
     logger.info(' Scaffold Repititions: {}'.format(reps))
     width = np.random.uniform(0.1,0.3)

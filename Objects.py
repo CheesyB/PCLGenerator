@@ -6,6 +6,8 @@ import pymesh as pm
 import trimesh as tri
 import pyntcloud as pc
 import utils
+import WrapMesh as wm
+import Element as ele
 import pandas as pa
 import logging
 
@@ -16,29 +18,31 @@ import logging
 
 """ returns two CustoMeshes, Class => (1,2) """
 
-def Basement(Class):
+def basement():
     logger = logging.getLogger('generator.'+__name__+'.Basement')
     T=utils.TicToc(logger)
 
     box = tri.creation.box()
     normal = np.array([0,0,1])
     origin = np.array([0,0,0])
+    
     upper = tri.intersections.slice_mesh_plane(box,normal,origin)
-    upperMesh = utils.WrapMesh('BasementUpper',upper,Class[0])
+    upperMesh = wm.WrapMesh(upper,'basement_up')
+    
     lower = tri.intersections.slice_mesh_plane(box,-normal,origin)
-    lowerMesh = utils.WrapMesh('BasementLower',lower,Class[1])
-    meshlist = list((upperMesh,lowerMesh))
-    return meshlist 
+    lowerMesh = wm.WrapMesh(lower,'basement_low')
+    element = ele.Element([upperMesh,lowerMesh],'first_ele')
+    return element 
 
 
     
-""" return one utils.WrapMesh, Class => 1 """
+""" return one WrapMesh, Class => 1 """
 
-def Container(thickness,Class):
+def container():
+    thickness = 0.1
     logger = logging.getLogger('generator.'+__name__+'.Container')
     T=utils.TicToc(logger)
     
-    logger.debug('Obacht mit der thickness, kann zu gross sein')
     #Big box minus smaller box inside equals simple container
     pmin = np.array([0,0,0])
     pmax = np.array([1,1,1])
@@ -51,15 +55,18 @@ def Container(thickness,Class):
 
     union_mesh = pm.boolean(boxmesh, inner_boxmesh,'symmetric_difference',engine="cgal")
     union_mesh = utils.PyMesh2Ply(union_mesh)
-    mesh = utils.WrapMesh('Container',union_mesh,Class)
+    mesh = wm.WrapMesh(union_mesh,'container')
+    element = ele.Element([mesh],'container_ele') 
     T.toc()
-    return [mesh]
+    print(element.wmeshes)
+    return element 
     
 
 
         
 
-def Scaffold(thickness,Class):
+def scaffold():
+    thickness = 0.1
     logger = logging.getLogger('generator.'+__name__+'.Scaffold')
     T=utils.TicToc(logger)
     
@@ -85,17 +92,20 @@ def Scaffold(thickness,Class):
     scaffold = inflator.mesh
 
     scaffold = utils.PyMesh2Ply(scaffold)
-    mesh = utils.WrapMesh('Scaffold',scaffold,Class)
+    mesh = wm.WrapMesh(scaffold,'scaffold')
+    element = ele.Element([mesh],'scaffold_ele') 
 
     T.toc()
-    return [mesh]
+    return element 
 
 
 
 
 """ needs two classes """
 
-def House(roofHeight,Classes):
+def house(roofHeight=None):
+    if roofHeight is None:
+        roofHeight = np.random.rand()
     logger = logging.getLogger('generator.'+__name__+'.House')
     T=utils.TicToc(logger)
     
@@ -124,7 +134,7 @@ def House(roofHeight,Classes):
     hull = tri.convex.convex_hull(vertices)
 
     body = tri.Trimesh(vertices=hull.vertices,faces=hull.faces)
-    bodymesh = utils.WrapMesh('body', body,Classes[1])
+    bodymesh = wm.WrapMesh(body,'body')
     
     
     
@@ -136,11 +146,13 @@ def House(roofHeight,Classes):
     hull = tri.convex.convex_hull(vertices)
     
     roof = tri.Trimesh(vertices=hull.vertices,faces=hull.faces)
-    roofmesh = utils.WrapMesh('roof',roof,Classes[0])
+    roofmesh = wm.WrapMesh(roof,'roof')
     
-    meshlist = list((roofmesh,bodymesh)) 
+    meshes = list((roofmesh,bodymesh)) 
+    element = ele.Element(meshes,'house_ele') 
+    
     T.toc() 
-    return meshlist
+    return element 
    
    
 

@@ -3,8 +3,9 @@
 
 import numpy as np
 import pandas as pa
-import Objects as po
+import Objects as o
 import trimesh as tri 
+import Element as ele
 import utils 
 import logging
 
@@ -14,7 +15,13 @@ import logging
 """ gibt das Gerüst immer im Eiheitswürfel zurück 
     scaffolds type => List<WrapMesh> 
     Class type => int               """
-def ScaffoldFactory(reps,Class=None):
+def scaffold_factory(reps=None):
+    if reps is None:
+        func = np.random.poisson(lam=1.82)
+        lmb = lambda:  max(min(4, func), 1)
+        reps = [lmb() for _ in range(3)]
+        reps[0] = 1
+    
     logger = logging.getLogger('generator.Assembler.ScaffoldFactory')
     T = utils.TicToc(logger)
      
@@ -41,27 +48,21 @@ def ScaffoldFactory(reps,Class=None):
                                         [0,0,1,z],
                                         [0,0,0,1]])
                 mat = translation.dot(scaling)
-                if Class is None:
-                    theClass = 40+count
-                    tmp = po.Scaffold(thickness,theClass)
-                    logger.info('Random Class {} added to wmesh: {}'.format(theClass,tmp[0].name))
-                else:
-                    tmp = po.Scaffold(thickness,Class) 
-                    logger.debug('Class {} added to wmesh: {}'.format(Class,tmp[0].name))
-
-                tmp[0]._mesh.apply_transform(mat) 
-                tmp[0]._prefix = 'hws_{}th'.format(count)
+                tmp = o.scaffold()
+                tmp.transform(mat) 
+                tmp._prefix = 'hws_{}th'.format(count)
                 scaffolds.extend(tmp)
     
     
     logger.info('total of {} scaffolds created'.format(n)) 
+    scaffold = ele.Element(scaffolds[0],'scaffols',meshlist=scaffolds[1:]) 
     T.toc() 
-    return scaffolds 
+    return scaffold
 
 
 """ Classes[0] = roof; Classes[1] = body; Classes[2] = scaffold """
 
-def HouseWithScaffold(roofHeight,width,reps,Classes):
+def hws(roofHeight,width,reps,Classes):
     
     logger = logging.getLogger('generator.Assembler.HouseWithScaffold')
     T = utils.TicToc(logger)
@@ -73,7 +74,7 @@ def HouseWithScaffold(roofHeight,width,reps,Classes):
     transl = (1+width,0,0) 
     transf = np.diag([1*0.25,1,1,1])
     
-    scaffolds = ScaffoldFactory(reps,None)
+    scaffolds = ScaffoldFactory(reps)
     for wmesh in scaffolds:
         wmesh._mesh.apply_transform(transf)
         wmesh._mesh.apply_translation(transl)
@@ -81,7 +82,7 @@ def HouseWithScaffold(roofHeight,width,reps,Classes):
     T.toc() 
     return scaffolds 
 
-def ScaffoldTest(width,reps):
+def scaffold_test(width,reps):
     
     logger = logging.getLogger('generator.Assembler.ScaffoldTest')
     T = utils.TicToc(logger)
@@ -91,9 +92,6 @@ def ScaffoldTest(width,reps):
     transf = np.diag([1*0.25,1,1,1])
     
     scaffolds = ScaffoldFactory(reps,None)
-    for wmesh in scaffolds:
-        wmesh._mesh.apply_transform(transf)
-        wmesh._mesh.apply_translation(transl)
     T.toc() 
     return scaffolds 
 
@@ -102,26 +100,29 @@ if __name__ == "__main__":
 
     logging.basicConfig(level=logging.INFO)
     logging.getLogger('generator').setLevel(logging.INFO)
-    logging.getLogger('utils.PyMesh2Ply').setLevel(logging.CRITICAL)    
     logging.getLogger('trimesh').setLevel(logging.CRITICAL)    
-    logging.getLogger('utils.TicToc').setLevel(logging.CRITICAL)    
 
-    utils.DelFilesInFolder('data')
+    cdict = {'basement_up':(1,0,0),
+            'basement_low':(0,1,0),
+            'roof':(1,1,0),
+            'body':(1,0,1),
+            'container':(0,1,1),
+            'scaffold':(0.5,0.5,0.5)}
     
-#    wmeshlist = ScaffoldFactory([2,3,3])
-#    scaffold.SaveMesh()
-#    scaffold.SavePC()
-    
-#    wmeshlist(0.1,[2,2,2])
+    saver =  utils.ElementSaver(cdict, 'data')
+    saver.delete_files()
 
-    wmeshlist = HouseWithScaffold(0.7,0.1,[2,2,2],(10,20,None))
+    ele = scaffold_factory()
+    saver.save_as_pc(ele)
 
-    i = 0
-    for wmesh in wmeshlist:
-        i += 1
-        logging.debug(' {} mesh'.format(i))
-        wmesh._prefix = '{}_Regular_'.format(i)
-        wmesh.SavePCRGB()
+#    wmeshlist = HouseWithScaffold(0.7,0.1,[2,2,2],(10,20,None))
+#
+#    i = 0
+#    for wmesh in wmeshlist:
+#        i += 1
+#        logging.debug(' {} mesh'.format(i))
+#        wmesh._prefix = '{}_Regular_'.format(i)
+#        wmesh.SavePCRGB()
 
 
 

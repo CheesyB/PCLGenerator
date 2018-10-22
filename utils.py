@@ -14,6 +14,62 @@ from datetime import timedelta
 import ipdb
 
 
+class ElementSaver(object):
+
+    """Docstring for Saver. """
+
+    def __init__(self,color_dict,data_path):
+        """TODO: to be defined1.
+
+        :color_dict: TODO
+        :data_path: TODO
+
+        """
+        self._color_dict = color_dict
+        self._data_path = data_path
+        self.logger = logging.getLogger('generator.'+__name__+'.Saver')
+        
+    def save_as_mesh(self,element):
+        pass
+
+    
+    
+    def save_as_pc(self,element):
+        print(element.wmeshes)
+        for wmesh in element.wmeshes:
+            color = self._color_dict[str(wmesh)] 
+            T = TicToc(self.logger,' sample pointcloud as np.array \
+                    with color {} from {}'.format(color,str(wmesh)))
+            
+            points = wmesh.pointcloud 
+            class_points = np.array([color for _ in range(points.shape[0])])
+            points = np.concatenate((points,class_points), axis=1)
+
+            dataframe = pa.DataFrame(columns=['x','y','z','red','green','blue'],data=points)
+            pyntcloud = pc.PyntCloud(dataframe)
+            pyntcloud.to_file(self._data_path + '/pc_{}.ply'.format(wmesh.name))
+            self.logger.info('{} color pointcloud written'.format(wmesh.name))
+            T.toc()
+    
+    
+    def delete_files(self):
+        i = 0
+        for the_file in os.listdir(self._data_path):
+            file_path = os.path.join(self._data_path, the_file)
+            try:
+                if os.path.isfile(file_path):
+                    os.unlink(file_path)
+                    i += 1
+                    self.logger.debug('{} deleted'.format(file_path))
+                #elif os.path.isdir(file_path): shutil.rmtree(file_path)
+            except Exception as e:
+                print(e)
+        self.logger.info(' {} files deleted'.format(i))
+
+
+
+
+
 class TicToc():
 
     """Docstring for TicToc. """
@@ -32,6 +88,11 @@ class TicToc():
         tac = time.time() - self.tic
         tac = timedelta(seconds=tac)
         self.logger.debug('{} finished: {}'.format(self.name,str(tac)))
+
+
+
+
+
 
 def PyMesh2Ply(target):
     logger = logging.getLogger('generator.'+__name__+'.PyMesh2Ply')
@@ -54,20 +115,6 @@ def SamplePointCloud(mesh,num):
     T.toc()
     return pointcloud 
 
-def DelFilesInFolder(path2folder):
-    logger = logging.getLogger('generator.'+__name__+'.DelFilesInFolder')
-    i = 0
-    for the_file in os.listdir(path2folder):
-        file_path = os.path.join(path2folder, the_file)
-        try:
-            if os.path.isfile(file_path):
-                os.unlink(file_path)
-                i += 1
-                logger.debug('{} deleted'.format(file_path))
-            #elif os.path.isdir(file_path): shutil.rmtree(file_path)
-        except Exception as e:
-            print(e)
-    logger.info('{} files deleted'.format(i))
 
 
 if __name__ == "__main__":
