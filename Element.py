@@ -14,7 +14,7 @@ class Element(object):
 
     """Docstring for Element. """
 
-    def __init__(self,wmeshes,name,**kwargs):
+    def __init__(self,wmeshes,name):
         """TODO: to be defined1.
 
         :wmeshes: TODO
@@ -23,9 +23,6 @@ class Element(object):
         self.wmeshes = wmeshes
         self.name = name
         self.logger = logging.getLogger('generator.Element')
-        if kwargs.get('meshlist'):
-            meshlist = kwargs.get('meshlist') 
-            self.wmeshes.extend(meshlist) 
     
     
    
@@ -136,20 +133,22 @@ if __name__ == "__main__":
     scaffold = o.scaffold()
     pc = scaffold.pointcloud_class
     bbox = scaffold.get_bbox()
-    scaffold.scale()
-    scaffold.rotate()
-    scaffold.translate()
+#    scaffold.scale()
+#    scaffold.rotate()
+#    scaffold.translate()
 
     basement.add_element(scaffold)
-    basement2 = Element(basement.wmeshes,'concat',meshlist=[house.wmeshes,house.wmeshes])
+    basement2 = Element(basement.wmeshes + container.wmeshes,'concat')
     
     
     saver = utils.ElementSaver(cdict,'data')
     saver.delete_files()
-    saver.save_as_pc(basement) 
-    saver.save_as_pc(container) 
-    saver.save_as_pc(house) 
+#    saver.save_as_pc(basement) 
+#    saver.save_as_pc(container) 
+#    saver.save_as_pc(house) 
     saver.save_as_pc(scaffold) 
+    
+#    saver.save_as_pc(basement2)
     print('stuff')
 
 

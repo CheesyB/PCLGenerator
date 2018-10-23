@@ -35,7 +35,6 @@ class ElementSaver(object):
     
     
     def save_as_pc(self,element):
-        print(element.wmeshes)
         for wmesh in element.wmeshes:
             color = self._color_dict[str(wmesh)] 
             T = TicToc(self.logger,' sample pointcloud as np.array \
@@ -47,7 +46,7 @@ class ElementSaver(object):
 
             dataframe = pa.DataFrame(columns=['x','y','z','red','green','blue'],data=points)
             pyntcloud = pc.PyntCloud(dataframe)
-            pyntcloud.to_file(self._data_path + '/pc_{}.ply'.format(wmesh.name))
+            pyntcloud.to_file(self._data_path + '/pc_{}_{}.ply'.format(wmesh.name,element.name))
             self.logger.info('{} color pointcloud written'.format(wmesh.name))
             T.toc()
     

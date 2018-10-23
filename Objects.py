@@ -44,8 +44,8 @@ def container():
     T=utils.TicToc(logger)
     
     #Big box minus smaller box inside equals simple container
-    pmin = np.array([0,0,0])
-    pmax = np.array([1,1,1])
+    pmin = np.array([-0.5,-0.5,-0.5])
+    pmax = np.array([0.5,0.5,0.5])
     boxmesh = pm.generate_box_mesh(pmin,pmax)
 
     newMin = pmin + np.array([thickness,thickness,thickness])
@@ -58,7 +58,6 @@ def container():
     mesh = wm.WrapMesh(union_mesh,'container')
     element = ele.Element([mesh],'container_ele') 
     T.toc()
-    print(element.wmeshes)
     return element 
     
 
@@ -70,14 +69,15 @@ def scaffold():
     logger = logging.getLogger('generator.'+__name__+'.Scaffold')
     T=utils.TicToc(logger)
     
-    p0 = np.array([0,0,0])
-    p1 = np.array([1,0,0])
-    p2 = np.array([1,1,0])
-    p3 = np.array([0,1,0])
-    p4 = np.array([0,0,1])
-    p5 = np.array([1,0,1])
-    p6 = np.array([1,1,1])
-    p7 = np.array([0,1,1])
+    p0 = np.array([-0.5,-0.5,0])
+    p1 = np.array([0.5,-0.5,0])
+    p2 = np.array([0.5,0.5,0])
+    p3 = np.array([-0.5,0.5,0])
+    
+    p4 = np.array([-0.5,-0.5,1])
+    p5 = np.array([0.5,-0.5,1])
+    p6 = np.array([0.5,0.5,1])
+    p7 = np.array([-0.5,0.5,1])
     
     vertices = np.vstack((p0,p1,p2,p3,p4,p5,p6,p7))
     edges = np.array([[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4], 
@@ -109,8 +109,8 @@ def house(roofHeight=None):
     logger = logging.getLogger('generator.'+__name__+'.House')
     T=utils.TicToc(logger)
     
-    pmin = np.array([0,0,0])
-    pmax = np.array([1,1,1])
+    pmin = np.array([-0.5,-0.5,0])
+    pmax = np.array([0.5,0.5,1])
 
 
     x = pmin[0]
@@ -161,40 +161,39 @@ def house(roofHeight=None):
 
 if __name__ == "__main__":
     
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
     logging.getLogger('generator').setLevel(logging.INFO)
-    logging.getLogger('trimesh').setLevel(logging.CRITICAL)
-    
-    T=utils.TicToc(name='Total')
+    logging.getLogger('trimesh').setLevel(logging.CRITICAL)    
 
-    utils.DelFilesInFolder('data')    
+    cdict = {'basement_up':(1,0,0),
+            'basement_low':(0,1,0),
+            'roof':(1,1,0),
+            'body':(1,0,1),
+            'container':(0,1,1),
+            'scaffold':(0.5,1,0.5)}
+    
+    saver =  utils.ElementSaver(cdict, 'data')
+    saver.delete_files()
     
     roofHeight = 1 
     thickness = 0.1
     
     
-    house = House(roofHeight,(1,2))
-    house[0].SaveMesh()
-    house[1].SaveMesh()
-    house[0].SavePC()
-    house[1].SavePC()
-
-    scaffold = Scaffold(thickness,1)
-    scaffold[0].SaveMesh()
-    scaffold[0].SavePC()
-    
-    basement = Basement((1,2))
-    basement[0].SaveMesh()
-    basement[1].SaveMesh()
-    basement[0].SavePC()
-    basement[1].SavePC()
+    house = house(roofHeight)
+    saver.save_as_pc(house)
     
 
-    container = Container(thickness,1)
-    container[0].SaveMesh()
-    container[0].SavePC()
+    scaffold = scaffold()
+    saver.save_as_pc(scaffold)
     
-    T.toc()
+    
+    basement = basement()
+    saver.save_as_pc(basement)
+    
+
+    container = container()
+    saver.save_as_pc(container)
+    
 
 
 

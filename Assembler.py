@@ -30,57 +30,62 @@ def scaffold_factory(reps=None):
     scaffolds = []
     thickness = 0.1
     
-    scaling = np.diag([1/reps[0],1/reps[1],1/reps[2],1])
-    dx = scaling[0][0]
-    dy = scaling[1][1]
-    dz = scaling[2][2]
+    scaling = [1/reps[0],1/reps[1],1/reps[2],1]
+    dx = scaling[0]
+    dy = scaling[1]
+    dz = scaling[2]
     count = 0 
 
     for i in range(reps[0]):
         for j in range(reps[1]):
             for k in range(reps[2]):
                 count += 1
-                x = i*dx
-                y = j*dy 
-                z = k*dz
-                translation = np.array([[1,0,0,x],
-                                        [0,1,0,y],
-                                        [0,0,1,z],
-                                        [0,0,0,1]])
-                mat = translation.dot(scaling)
+                x =  i*dx
+                y =  j*dy 
+                z =  k*dz
+             
                 tmp = o.scaffold()
-                tmp.transform(mat) 
-                tmp._prefix = 'hws_{}th'.format(count)
-                scaffolds.extend(tmp)
+                tmp.scale(scaling)
+                tmp.translate([x,y,z]) 
+                tmp.wmeshes[0].prefix = 'hws_{}th'.format(count)
+                mesh = tmp.wmeshes
+                scaffolds.extend(mesh)
     
     
     logger.info('total of {} scaffolds created'.format(n)) 
-    scaffold = ele.Element(scaffolds[0],'scaffols',meshlist=scaffolds[1:]) 
+
+    scaffold = ele.Element(scaffolds,'scaffols') 
+    center = scaffold.entire_mesh.center_mass
+    center[2] = 0
+    scaffold.translate(-center)
+
     T.toc() 
     return scaffold
 
 
 """ Classes[0] = roof; Classes[1] = body; Classes[2] = scaffold """
 
-def hws(roofHeight,width,reps,Classes):
+def hws():
     
     logger = logging.getLogger('generator.Assembler.HouseWithScaffold')
     T = utils.TicToc(logger)
      
-    house = po.House(roofHeight,Classes[:2]) # returns (roof,mesh)
-    house[0]._prefix = 'hws_'
-    house[1]._prefix = 'hws_'
+    hws = o.house() # returns (roof,mesh)
+    hws.wmeshes[0]._prefix = 'hws_'
+    hws.wmeshes[1]._prefix = 'hws_'
     
+    width = 0.01
     transl = (1+width,0,0) 
-    transf = np.diag([1*0.25,1,1,1])
+    scale = [1*0.25,1,1,1]
     
-    scaffolds = ScaffoldFactory(reps)
-    for wmesh in scaffolds:
-        wmesh._mesh.apply_transform(transf)
-        wmesh._mesh.apply_translation(transl)
-    scaffolds.extend(house)
+    scaffolds = scaffold_factory()
+    scaffolds.scale(scale)
+    scaffolds.translate(transl)
+    
+    hws.add_element(scaffolds)
+
     T.toc() 
-    return scaffolds 
+    return hws
 
 def scaffold_test(width,reps):
     
@@ -107,37 +112,16 @@ if __name__ == "__main__":
             'roof':(1,1,0),
             'body':(1,0,1),
             'container':(0,1,1),
-            'scaffold':(0.5,0.5,0.5)}
+            'scaffold':(0.5,1,0.5)}
     
     saver =  utils.ElementSaver(cdict, 'data')
     saver.delete_files()
 
-    ele = scaffold_factory()
-    saver.save_as_pc(ele)
-
-#    wmeshlist = HouseWithScaffold(0.7,0.1,[2,2,2],(10,20,None))
-#
-#    i = 0
-#    for wmesh in wmeshlist:
-#        i += 1
-#        logging.debug(' {} mesh'.format(i))
-#        wmesh._prefix = '{}_Regular_'.format(i)
-#        wmesh.SavePCRGB()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    sf = scaffold_factory()
+    saver.save_as_pc(sf)
+    
+    myhws = hws()
+    saver.save_as_pc(myhws)
 
 
 
