@@ -97,7 +97,10 @@ class Element(object):
 
 
 if __name__ == "__main__":
+    test()
 
+
+def test():
     logging.basicConfig(level=logging.DEBUG)
     logging.getLogger('generator').setLevel(logging.INFO)
     logging.getLogger('trimesh').setLevel(logging.CRITICAL)

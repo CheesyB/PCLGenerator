@@ -102,7 +102,10 @@ def scaffold_test(width,reps):
 
 
 if __name__ == "__main__":
+    test()
 
+
+def test():
     logging.basicConfig(level=logging.INFO)
     logging.getLogger('generator').setLevel(logging.INFO)
     logging.getLogger('trimesh').setLevel(logging.CRITICAL)    

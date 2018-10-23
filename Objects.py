@@ -160,7 +160,11 @@ def house(roofHeight=None):
 
 
 if __name__ == "__main__":
-    
+    test() 
+
+
+def test():
+
     logging.basicConfig(level=logging.INFO)
     logging.getLogger('generator').setLevel(logging.INFO)
     logging.getLogger('trimesh').setLevel(logging.CRITICAL)    
@@ -179,20 +183,20 @@ if __name__ == "__main__":
     thickness = 0.1
     
     
-    house = house(roofHeight)
-    saver.save_as_pc(house)
+    myhouse = house(roofHeight)
+    saver.save_as_pc(myhouse)
     
 
-    scaffold = scaffold()
-    saver.save_as_pc(scaffold)
+    myscaffold = scaffold()
+    saver.save_as_pc(myscaffold)
     
     
-    basement = basement()
-    saver.save_as_pc(basement)
+    mybasement = basement()
+    saver.save_as_pc(mybasement)
     
 
-    container = container()
-    saver.save_as_pc(container)
+    mycontainer = container()
+    saver.save_as_pc(mycontainer)
     
 
 

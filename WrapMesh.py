@@ -112,10 +112,10 @@ class WrapMesh(object):
     
          
 if __name__ == "__main__":
-       pass 
-        
+       test() 
     
-    
+def test():
+    print('Not Implemented')
          
     
      

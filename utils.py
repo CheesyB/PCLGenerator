@@ -115,12 +115,13 @@ def SamplePointCloud(mesh,num):
     return pointcloud 
 
 
+def test():
+    print('Not Implemented')
+
 
 if __name__ == "__main__":
-    mesh = tri.creation.box()
-    wmesh = WrapMesh('house',mesh,(55))
-    wmesh.SavePCRGB()
-    print('lol')
+    test()
+
 
 
 
