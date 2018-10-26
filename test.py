@@ -80,10 +80,7 @@ class TestElement(unittest.TestCase):
             self.fail("Element.entire_mesh raised ExceptionType unexpectedly!")
     
     def test_ground_truth(self):
-        try:
             gt = self.ele.ground_truth
-        except ValueError:
-            self.fail("Element.ground_truth raised ExceptionType unexpectedly!")
     
     """ transform anytime, rotation ony around the z-axis """
     def test_transform(self):
