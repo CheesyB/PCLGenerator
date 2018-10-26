@@ -6,9 +6,9 @@ import trimesh as tri
 import pandas as pa
 import numpy as np
 import pyntcloud as pc
-import utils
-import Objects as o
 import trimesh.transformations as trans
+from .wrapmesh import WrapMesh 
+from .tictoc import TicToc
 
 class Element(object):
 
@@ -22,14 +22,7 @@ class Element(object):
         """
         self.wmeshes = wmeshes
         self.name = name
-        self.logger = logging.getLogger('generator.Element')
-    
-    
-   
-    def set_class(self,class_dict):
-        for wmesh in self.wmeshes:
-            cnum = class_dict[str(wmesh)]
-            wmesh.class_num = cnum
+        self.logger = logging.getLogger('generator.simples.element')
     
     
     @property
@@ -38,18 +31,33 @@ class Element(object):
 
     @property
     def pointcloud(self):
-        return np.hstack([wmesh.pointcloud for wmesh in self.wmeshes])
+        return np.vstack([wmesh.pointcloud for wmesh in self.wmeshes])
     
     @property 
     def pointcloud_class(self):
-        return np.hstack([wmesh.pointcloud_class for wmesh in self.wmeshes])
+        return np.vstack([wmesh.pointcloud_class for wmesh in self.wmeshes])
     
     @property
     def entire_mesh(self):
         return tri.util.concatenate(self.trimeshes)
+   
+
+    """ with focus on the rectangle packer  """
+    @property
+    def ground_truth(self): 
+        tol  = 0.1
+        bbox = self.entire_mesh.bounding_box
+        points = [point for point in bbox.vertices if abs(point[2]) < tol] 
+        xmin = min(points[0,:])
+        ymin = min(points[1,:])
+        xmax = max(points[0,:])
+        ymax = max(points[1,:])
+        w = xmax - xmin
+        h = ymax - ymin 
+        return (w, h, xmin, ymin) 
 
 
-    def transform(transl,scale,alpha):
+    def transform(self,transl,scale,alpha):
         zaxis = [0,0,1] 
         R = trans.rotation_matrix(alpha,zaxis)
         S = np.diag(scale)
@@ -57,14 +65,16 @@ class Element(object):
         
         #Z = shear_matrix(beta, xaxis, origin, zaxis)
         for wmesh in self.wmeshes:
-            self.wmeshes([R,S,T])
-    
+            wmesh.transform([R,S,T])
+
+    #translate last 
     def translate(self,translation=None):
         if translation is None:
             translation = [np.random.uniform(-1,1),np.random.uniform(-1,1),0] 
         for wmesh in self.wmeshes:
             wmesh._mesh.vertices += translation
-    
+   
+    #rotate second 
     def rotate(self,alpha=None):
         if alpha is None:
             alpha = np.random.uniform(0,360)
@@ -85,7 +95,7 @@ class Element(object):
     
     
     
-    def get_bbox(self):
+    def get_bboxo(self):
         total_mesh = self.entire_mesh 
         bboxo = total_mesh.bounding_box_oriented
         return bboxo
@@ -96,71 +106,59 @@ class Element(object):
                         '{} to {}'.format(other_element.name, self.name))
 
 
-if __name__ == "__main__":
-    test()
 
 
-def test():
-    logging.basicConfig(level=logging.DEBUG)
-    logging.getLogger('generator').setLevel(logging.INFO)
-    logging.getLogger('trimesh').setLevel(logging.CRITICAL)
+##def test():
     
-    cdict = {'basement_up':(1,0,0),
-            'basement_low':(0,1,0),
-            'roof':(1,1,0),
-            'body':(1,0,1),
-            'container':(0,1,1),
-            'scaffold':(0.5,0.5,0.5)}
 
-    basement = o.basement()
-    pc = basement.pointcloud_class
-    bbox = basement.get_bbox()
-    basement.scale()
-    basement.rotate()
-    basement.translate()
-
-    container = o.container()
-    pc = container.pointcloud_class
-    bbox = container.get_bbox()
-    container.scale()
-    container.rotate()
-    container.translate()
-
-    house = o.house()
-    pc = house.pointcloud_class
-    bbox = house.get_bbox()
-    house.scale()
-    house.rotate()
-    house.translate()
-
-    scaffold = o.scaffold()
-    pc = scaffold.pointcloud_class
-    bbox = scaffold.get_bbox()
+    
+#    wmesh = wm.WrapMesh(tri.creation.box,'test',1)
+#    elebox = Element(wmesh,'test')
+#    
+#    basement = basement()
+#    pc = basement.pointcloud_class
+#    bbox = basement.get_bbox()
+#    basement.scale()
+#    basement.rotate()
+#    basement.translate()
+#
+#    container = o.container()
+#    pc = container.pointcloud_class
+#    bbox = container.get_bbox()
+#    container.scale()
+#    container.rotate()
+#    container.translate()
+#
+#    house = o.house()
+#    pc = house.pointcloud_class
+#    bbox = house.get_bbox()
+#    gt = house.ground_truth
+#    house.scale()
+#    house.rotate()
+#    house.translate()
+#
+#    scaffold = o.scaffold()
+#    pc = scaffold.pointcloud_class
+#    bbox = scaffold.get_bbox()
 #    scaffold.scale()
 #    scaffold.rotate()
 #    scaffold.translate()
-
-    basement.add_element(scaffold)
-    basement2 = Element(basement.wmeshes + container.wmeshes,'concat')
-    
-    
-    saver = utils.ElementSaver(cdict,'data')
-    saver.delete_files()
-#    saver.save_as_pc(basement) 
-#    saver.save_as_pc(container) 
-#    saver.save_as_pc(house) 
-    saver.save_as_pc(scaffold) 
-    
-#    saver.save_as_pc(basement2)
-    print('stuff')
-
+#
+#    basement.add_element(scaffold)
+#    basement2 = Element(basement.wmeshes + container.wmeshes,'concat')
+#    
+#    
+#    saver = utils.ElementSaver(cdict,'data')
+#    saver.delete_files()
+##    saver.save_as_pc(basement) 
+##    saver.save_as_pc(container) 
+##    saver.save_as_pc(house) 
+#    saver.save_as_pc(scaffold) 
+#    
+##    saver.save_as_pc(basement2)
 
 
 
-
-
-
-
-
-
+if __name__ == "__main__":
+    test()
 
