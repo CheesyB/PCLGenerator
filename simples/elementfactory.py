@@ -32,21 +32,26 @@ class ElementFactory(object):
                     class value(int)
 
         """
+        self._id = 0 
         self._class_dict = classdict
         if self._class_dict is None: 
             self._class_dict = ElementFactory.class_dict
-        self._roof_heigt = roof_height 
+        self._roof_height = roof_height 
+        self.logger = logging.getLogger('generator.simples.ElementFactory')
 
     @staticmethod
     def get_class_names():
         return ['basement_low','basement_up','container','scaffold','roof','body']
 
+    @property
+    def id(self):
+        self._id += 1
+        return self._id
     
     """ returns two CustoMeshes """
 
     def basement(self):
-        logger = logging.getLogger('generator.'+__name__+'.Basement')
-        T=TicToc(logger)
+        T=TicToc(self.logger)
 
         box = tri.creation.box()
         normal = np.array([0,0,1])
@@ -54,12 +59,12 @@ class ElementFactory(object):
         
         upper = tri.intersections.slice_mesh_plane(box,normal,origin)
         num = self._class_dict['basement_up']
-        upperMesh = wm.WrapMesh(upper,num,'basement_up')
+        upperMesh = wm.WrapMesh(upper,'basement_up',num)
         
         lower = tri.intersections.slice_mesh_plane(box,-normal,origin)
         num = self._class_dict['basement_low']
-        lowerMesh = wm.WrapMesh(lower,num,'basement_low')
-        element = ele.Element([upperMesh,lowerMesh],'first_ele')
+        lowerMesh = wm.WrapMesh(lower,'basement_low',num)
+        element = ele.Element([upperMesh,lowerMesh],'basement_ele'+str(self.id))
         return element 
 
 
@@ -68,8 +73,7 @@ class ElementFactory(object):
 
     def container(self):
         thickness = 0.1
-        logger = logging.getLogger('generator.'+__name__+'.Container')
-        T=TicToc(logger)
+        T=TicToc(self.logger)
         
         #Big box minus smaller box inside equals simple container
         pmin = np.array([-0.5,-0.5,-0.5])
@@ -85,9 +89,9 @@ class ElementFactory(object):
         union_mesh = PyMesh2Ply(union_mesh)
         
         num = self._class_dict['container']
-        mesh = wm.WrapMesh(union_mesh,num,'container')
+        mesh = wm.WrapMesh(union_mesh,'container',num)
 
-        element = ele.Element([mesh],'container_ele') 
+        element = ele.Element([mesh],'container_ele'+str(self.id)) 
         T.toc()
         return element 
         
@@ -95,10 +99,9 @@ class ElementFactory(object):
     """ needs two classes """
 
     def house(self):
-        if self.roofHeight is None:
+        if self._roof_height is None:
             roofHeight = np.random.rand()
-        logger = logging.getLogger('generator.'+__name__+'.House')
-        T=TicToc(logger)
+        T=TicToc(self.logger)
         
         pmin = np.array([-0.5,-0.5,0])
         pmax = np.array([0.5,0.5,1])
@@ -126,23 +129,23 @@ class ElementFactory(object):
 
         body = tri.Trimesh(vertices=hull.vertices,faces=hull.faces)
         num = self._class_dict['body']
-        bodymesh = wm.WrapMesh(body,num,'body')
+        bodymesh = wm.WrapMesh(body,'body',num)
         
         
         
         
-        p8 = pmin + np.array([1/2,0,1+self.roofHeight])
-        p9 = pmin + np.array([1/2,1,1+self.roofHeight])
+        p8 = pmin + np.array([1/2,0,1+self._roof_height])
+        p9 = pmin + np.array([1/2,1,1+self._roof_height])
         
         vertices = np.vstack((p4,p5,p6,p7,p8,p9))
         hull = tri.convex.convex_hull(vertices)
         
         roof = tri.Trimesh(vertices=hull.vertices,faces=hull.faces)
         num = self._class_dict['roof']
-        roofmesh = wm.WrapMesh(roof,'roof')
+        roofmesh = wm.WrapMesh(roof,'roof',num)
         
         meshes = list((roofmesh,bodymesh)) 
-        element = ele.Element(meshes,'house_ele') 
+        element = ele.Element(meshes,'house_ele'+str(self.id)) 
         
         T.toc() 
         return element 
@@ -150,8 +153,7 @@ class ElementFactory(object):
     
     def _one_scaffold(self):
         thickness = 0.1
-        logger = logging.getLogger('generator.'+__name__+'._one_scaffold')
-        T=TicToc(logger)
+        T=TicToc(self.logger)
         
         p0 = np.array([-0.5,-0.5,0])
         p1 = np.array([0.5,-0.5,0])
@@ -176,9 +178,9 @@ class ElementFactory(object):
         scaffold = inflator.mesh
 
         scaffold = PyMesh2Ply(scaffold)
-        mesh = wm.WrapMesh(scaffold,'scaffold')
         num = self._class_dict['scaffold']
-        element = ele.Element([mesh],'scaffold_ele') 
+        mesh = wm.WrapMesh(scaffold,'scaffold',num)
+        element = ele.Element([mesh],'scaffold_ele'+str(self.id)) 
 
         T.toc()
         return element 
@@ -195,8 +197,7 @@ class ElementFactory(object):
 #            reps = [lmb() for _ in range(3)]
 #            reps[0] = 1
         
-        logger = logging.getLogger('generator.objectfactory.scaffold')
-        T = TicToc(logger)
+        T = TicToc(self.logger)
          
         n = reps[0]*reps[1]*reps[2]
         
@@ -217,7 +218,7 @@ class ElementFactory(object):
                     y =  j*dy 
                     z =  k*dz
                  
-                    tmp = o.scaffold()
+                    tmp = self._one_scaffold()
                     tmp.scale(scaling)
                     tmp.translate([x,y,z]) 
                     tmp.wmeshes[0].prefix = 'hws_{}th'.format(count)
@@ -225,9 +226,9 @@ class ElementFactory(object):
                     scaffolds.extend(mesh)
         
         
-        logger.info('total of {} scaffolds created'.format(n)) 
+        self.logger.info('total of {} scaffolds created'.format(n)) 
 
-        ele_scaffold = ele.Element(scaffolds,'scaffols') 
+        ele_scaffold = ele.Element(scaffolds,'scaffols'+str(self.id)) 
         center = ele_scaffold.entire_mesh.center_mass
         center[2] = 0
         ele_scaffold.translate(-center)
@@ -240,10 +241,10 @@ class ElementFactory(object):
 
     def hws(self,reps):
         
-        logger = logging.getLogger('generator.objectfactory.hws')
-        T = TicToc(logger)
+        T = TicToc(self.logger)
          
         hws = self.house() # returns (roof,mesh)
+        hws.name = 'hws_ele'+str(self.id)
         hws.wmeshes[0]._prefix = 'hws_'
         hws.wmeshes[1]._prefix = 'hws_'
         
@@ -259,20 +260,6 @@ class ElementFactory(object):
 
         T.toc() 
         return hws
-
-    def scaffold_test(self):
-        
-        logger = logging.getLogger('generator.objectfactory.scaffold_test')
-        T = TicToc(logger)
-         
-        width = 0.08 
-        transl = (1+width,0,0) 
-        transf = np.diag([1*0.25,1,1,1])
-        
-        scaffolds = ScaffoldFactory(reps,None)
-        T.toc() 
-        return scaffolds 
-
 
 
 

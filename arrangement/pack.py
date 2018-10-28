@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from rectpack import newPacker
+import rectpack as rp #float2dec,newPacker
+import logging
 
 
-
-class KnapSackTranslator(object):
+class RectangleArranger(object):
 
     """ Takes a list of elements, gets their groundtruth and calculates the
         translations for each element to fit in the scene without overlap """
@@ -14,93 +14,86 @@ class KnapSackTranslator(object):
         """TODO: to be defined1. """
         self._height = height
         self._width = width
+        self.rectangles= []
+        self.packer = rp.newPacker(rp.PackingMode.Online,rotation=False)
+        self.packer.add_bin(self._width,self._width)
+        self.logger = logging.getLogger('generator.arrangement.RectangleArranger')
         
+    def packstuff(self,elements):
+        for ele in elements:
+            self.logger.info('{} is processed'.format(ele.name))
+            _,hw= ele.ground_truth
+            hw = ((rp.float2dec(hw[0], 3), rp.float2dec(hw[1], 3)))
+            self.packer.add_rect(*hw,rid=ele.name)
+            rect = self.packer.rect_list()[-1]
+            self._apply_translation(ele,rect)
 
-    def get_scene_parts(self,elements):
-        self.elements = elements 
-        for ele in elements
-            gt = ele.groundtruth
-            self.rectangles = # gt iwas
+#        rects = self.packer.rect_list()
+#        
+#        for ele in elements:
+#            rect = [rect for rect in rects if rect[-1] == ele.name]
+#            assert len(rect) is 1, 'only one rectangle makes sense here...'
+                
+        return self.packer
 
-#    def calcualte_translations(self,distance=None):
-#        """ 
-#        self.translations = {self.elements[i]:translation_matrix}
-#        """
-#        pass
+    def _calcualte_translation(self,element):
+        """ 
+        self.translations = {self.elements[i]:translation_matrix}
+        """
+        pass
+
+
+
+    def _apply_translation(self,element,rect):
+        """TODO: Docstring for apply_translation.
+        :returns: TODO
+
+        """
+        
+#        self.logger.info('we came this far:)')
+        element.translate([float(rect[3]),float(rect[4]),0.0])
+
+
+
+
+
+
+
+
+
+
+
+
+## Bin dimmensions (bins can be reordered during packing)
+#width, height = abin.width, abin.height
 #
-#    def apply_translation(self):
-#        """TODO: Docstring for apply_translation.
-#        :returns: TODO
+## Number of rectangles packed into first bin
+#nrect = len(packer[0])
 #
-#        """
-#        for ele in self.current_elements:
-#            ele.tranlate(self.translations[ele])
-
-
-
-
-
-
-
-
-
-
-
-
-
-rectangles = [(100, 30), (40, 60), (30, 30),(70, 70), (100, 50), (30, 30)]
-bins = [(300, 450)]
-
-packer = newPacker()
-
-# Add the rectangles to packing queue
-for r in rectangles:
-	packer.add_rect(*r)
-
-# Add the bins where the rectangles will be placed
-for b in bins:
-	packer.add_bin(*b)
-
-# Start packing
-packer.pack()
-
-
-#btain number of bins used for packing
-nbins = len(packer)
-
-# Index first bin
-abin = packer[0]
-
-# Bin dimmensions (bins can be reordered during packing)
-width, height = abin.width, abin.height
-
-# Number of rectangles packed into first bin
-nrect = len(packer[0])
-
-# Second bin first rectangle
-rect = packer[0][0]
-
-# rect is a Rectangle object
-x = rect.x # rectangle bottom-left x coordinate
-y = rect.y # rectangle bottom-left y coordinate
-w = rect.width
-h = rect.height
-
-for abin in packer:
-  print(abin.bid) # Bin id if it has one
-  for rect in abin:
-    print(rect)
-
-# Full rectangle list
-all_rects = packer.rect_list()
-for rect in all_rects:
-	b, x, y, w, h, rid = rect
-
-# b - Bin index
-# x - Rectangle bottom-left corner x coordinate
-# y - Rectangle bottom-left corner y coordinate
-# w - Rectangle width
-# h - Rectangle height
-# rid - User asigned rectangle id or None:
+## Second bin first rectangle
+#rect = packer[0][0]
+#
+## rect is a Rectangle object
+#x = rect.x # rectangle bottom-left x coordinate
+#y = rect.y # rectangle bottom-left y coordinate
+#w = rect.width
+#h = rect.height
+#
+#for abin in packer:
+#  print(abin.bid) # Bin id if it has one
+#  for rect in abin:
+#    print(rect)
+#
+## Full rectangle list
+#all_rects = packer.rect_list()
+#for rect in all_rects:
+#	b, x, y, w, h, rid = rect
+#
+## b - Bin index
+## x - Rectangle bottom-left corner x coordinate
+## y - Rectangle bottom-left corner y coordinate
+## w - Rectangle width
+## h - Rectangle height
+## rid - User asigned rectangle id or None:
 
 print('end')

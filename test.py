@@ -5,8 +5,8 @@ import unittest
 import logging 
 import numpy as np
 import trimesh as tri
-import simples.wrapmesh as  wm
-import simples.element as el
+import simples.wrapmesh as  wm 
+import simples.element as el 
 import simples.elementsaver as es
 import simples.elementfactory as ef
 
@@ -15,9 +15,8 @@ class TestWrapMesh(unittest.TestCase):
 
 
     def setUp(self):
-        self.box = tri.creation.annulus()
-        self.wmesh = wm.WrapMesh(self.box,'test',1)
-        #logging in unittests is a bad idea
+        self.box = tri.creation.annulus() 
+        self.wmesh = wm.WrapMesh(self.box,'test',1) #logging in unittests is a bad idea
     
 
 
@@ -133,26 +132,31 @@ class TestElementFactory(unittest.TestCase):
     def test_element_factory(self):
         EleFac = ef.ElementFactory(2)
 
+    def test_id(self):
+        ba1 = self.EleFac.basement()
+        ba2 = self.EleFac.basement()
+        self.assertEqual(ba2.name, 'basement_ele2')
+
     def test_get_class_names(self): 
         classnames = ef.ElementFactory.get_class_names()
         self.assertEqual(classnames,['basement_low','basement_up',
             'container','scaffold','roof','body'])
 
     def test_basement(self):
-        self.EleFac.basement()
+        ba = self.EleFac.basement()
 
     def test_container(self):
-        self.EleFac.container()
+        co =  self.EleFac.container()
 
     def test_scaffold(self):
-        self.EleFac.container()
+        sc = self.EleFac.scaffold([2,2,2])
 
     def test_house(self):
-        self.EleFac.container()
+        ho = self.EleFac.house()
 
     def test_hws(self):
-        self.EleFac.container()
-
+        hws = self.EleFac.hws([2,2,3])
+        
 
 
 if __name__ == "__main__":

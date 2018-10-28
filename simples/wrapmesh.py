@@ -28,10 +28,8 @@ class WrapMesh(object):
         self._class_name = classname
         self.class_num = classnum  
         self.num_points = numpoints 
-        self.logger = logging.getLogger('generator.simples.utils.WrapMesh')
-        if isinstance(self._mesh,list):
-            self._mesh = [self._mesh]
-    
+        self.logger = logging.getLogger('generator.simples.WrapMesh')
+  
     
     def __str__(self):
         return self._class_name
