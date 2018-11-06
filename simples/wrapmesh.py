@@ -23,7 +23,7 @@ class WrapMesh(object):
         :clasname: string 
         :classnum: int
         """
-        self.prefix = 'reg_'
+        self.prefix = 'raw_'
         self._mesh = mesh 
         self._class_name = classname
         self.class_num = classnum  

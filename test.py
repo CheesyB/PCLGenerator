@@ -9,6 +9,7 @@ import simples.wrapmesh as  wm
 import simples.element as el 
 import simples.elementsaver as es
 import simples.elementfactory as ef
+import simples.elements.container as container
 
 
 class TestWrapMesh(unittest.TestCase):
@@ -27,7 +28,7 @@ class TestWrapMesh(unittest.TestCase):
         self.assertEqual(str(self.wmesh),'test','Stringing the obj is wrong')
 
     def test_name(self):
-        self.assertEqual(self.wmesh.name,'reg_test','Property does not work')
+        self.assertEqual(self.wmesh.name,'raw_test','Property does not work')
     
     def test_pointcloud(self): 
         cloud = self.wmesh.pointcloud
@@ -102,6 +103,9 @@ class TestElement(unittest.TestCase):
 
     def test_add_element(self):
         self.ele.add_element(self.ele)
+    
+    def test_lower_left(self):
+        ll = self.ele.lower_left 
 
 class TestElementSaver(unittest.TestCase):
     
@@ -141,6 +145,7 @@ class TestElementFactory(unittest.TestCase):
         classnames = ef.ElementFactory.get_class_names()
         self.assertEqual(classnames,['basement_low','basement_up',
             'container','scaffold','roof','body'])
+    
 
     def test_basement(self):
         ba = self.EleFac.basement()
@@ -157,7 +162,11 @@ class TestElementFactory(unittest.TestCase):
     def test_hws(self):
         hws = self.EleFac.hws([2,2,3])
         
-
+class TestContainer(unittest.TestCase):
+    
+    def test_container_setup(self):
+        self.container = container.Container()
+        
 
 if __name__ == "__main__":
     unittest.main()

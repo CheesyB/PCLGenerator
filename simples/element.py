@@ -42,18 +42,21 @@ class Element(object):
     @property
     def entire_mesh(self):
         return tri.util.concatenate(self.trimeshes)
-    
+   
+    @property
+    def lower_left(self):
+        ll,_ = self.ground_truth
+        return ll
     
     @property
     def ground_truth(self):
-        tol  = 0.1
         vert = np.array(self.entire_mesh.bounding_box.vertices)
         vert_cleaned = np.delete(vert,(0,2,4,6),0)
-	
-        xmin = min(vert_cleaned[0,:])
-        ymin = min(vert_cleaned[1,:])
-        xmax = max(vert_cleaned[0,:])
-        ymax = max(vert_cleaned[1,:])
+        	
+        xmin = min(vert_cleaned[:,0])
+        ymin = min(vert_cleaned[:,1])
+        xmax = max(vert_cleaned[:,0])
+        ymax = max(vert_cleaned[:,1])
         width = xmax - xmin
         height  = ymax - ymin 
         return (xmin,ymin),(width,height) 
@@ -73,6 +76,7 @@ class Element(object):
     def translate(self,translation=None):
         if translation is None:
             translation = [np.random.uniform(-1,1),np.random.uniform(-1,1),0] 
+        lower_left = self.lower_left
         for wmesh in self.wmeshes:
             wmesh._mesh.vertices += translation
    

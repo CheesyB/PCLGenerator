@@ -12,6 +12,13 @@ import logging
 
 
 
+def count():
+    n = 1
+    while True:
+        yield n
+        n += 1
+
+
 class ElementFactory(object):
 
     """Docstring for ObjectFactory. """
@@ -46,6 +53,7 @@ class ElementFactory(object):
     @property
     def id(self):
         self._id += 1
+        self.logger.debug('element id is {}'.format(self._id))
         return self._id
     
     """ returns two CustoMeshes """
@@ -60,10 +68,12 @@ class ElementFactory(object):
         upper = tri.intersections.slice_mesh_plane(box,normal,origin)
         num = self._class_dict['basement_up']
         upperMesh = wm.WrapMesh(upper,'basement_up',num)
+        upperMesh.prefix = 'reg_'
         
         lower = tri.intersections.slice_mesh_plane(box,-normal,origin)
         num = self._class_dict['basement_low']
         lowerMesh = wm.WrapMesh(lower,'basement_low',num)
+        lowerMesh.prefix = 'reg_'
         element = ele.Element([upperMesh,lowerMesh],'basement_ele'+str(self.id))
         return element 
 
@@ -76,8 +86,8 @@ class ElementFactory(object):
         T=TicToc(self.logger)
         
         #Big box minus smaller box inside equals simple container
-        pmin = np.array([-0.5,-0.5,-0.5])
-        pmax = np.array([0.5,0.5,0.5])
+        pmin = np.array([-0.5,-0.5,0])
+        pmax = np.array([0.5,0.5,1])
         boxmesh = pm.generate_box_mesh(pmin,pmax)
 
         newMin = pmin + np.array([thickness,thickness,thickness])
@@ -90,6 +100,7 @@ class ElementFactory(object):
         
         num = self._class_dict['container']
         mesh = wm.WrapMesh(union_mesh,'container',num)
+        mesh.prefix = 'reg_'
 
         element = ele.Element([mesh],'container_ele'+str(self.id)) 
         T.toc()
@@ -130,6 +141,7 @@ class ElementFactory(object):
         body = tri.Trimesh(vertices=hull.vertices,faces=hull.faces)
         num = self._class_dict['body']
         bodymesh = wm.WrapMesh(body,'body',num)
+        bodymesh.prefix = 'reg_'
         
         
         
@@ -143,6 +155,7 @@ class ElementFactory(object):
         roof = tri.Trimesh(vertices=hull.vertices,faces=hull.faces)
         num = self._class_dict['roof']
         roofmesh = wm.WrapMesh(roof,'roof',num)
+        roofmesh.prefix = 'reg_'
         
         meshes = list((roofmesh,bodymesh)) 
         element = ele.Element(meshes,'house_ele'+str(self.id)) 
@@ -180,7 +193,8 @@ class ElementFactory(object):
         scaffold = PyMesh2Ply(scaffold)
         num = self._class_dict['scaffold']
         mesh = wm.WrapMesh(scaffold,'scaffold',num)
-        element = ele.Element([mesh],'scaffold_ele'+str(self.id)) 
+        mesh.prefix = 'raw_'
+        element = ele.Element([mesh],'raw_scaffold_ele') 
 
         T.toc()
         return element 
@@ -190,13 +204,7 @@ class ElementFactory(object):
     """ gibt das Gerüst immer im Eiheitswürfel zurück 
         scaffolds type => List<WrapMesh> 
         Class type => int               """
-    def scaffold(self,reps):
-#        if reps is None:
-#            func = np.random.poisson(lam=1.82)
-#            lmb = lambda:  max(min(4, func), 1)
-#            reps = [lmb() for _ in range(3)]
-#            reps[0] = 1
-        
+    def scaffold(self,reps,prefix=None):
         T = TicToc(self.logger)
          
         n = reps[0]*reps[1]*reps[2]
@@ -221,7 +229,7 @@ class ElementFactory(object):
                     tmp = self._one_scaffold()
                     tmp.scale(scaling)
                     tmp.translate([x,y,z]) 
-                    tmp.wmeshes[0].prefix = 'hws_{}th'.format(count)
+                    tmp.wmeshes[0].prefix = 'reg_{}'.format(count)
                     mesh = tmp.wmeshes
                     scaffolds.extend(mesh)
         

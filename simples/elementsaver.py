@@ -51,7 +51,8 @@ class ElementSaver(object):
             dataframe = pa.DataFrame(columns=['x','y','z','red','green','blue'],data=points)
             pyntcloud = pc.PyntCloud(dataframe)
             pyntcloud.to_file(self._data_path + '/pc_{}_{}.ply'.format(wmesh.name,element.name))
-            self.logger.info('{} color pointcloud written'.format(wmesh.name))
+            self.logger.info('pc_{}_{}.ply  pointcloud(color)'
+                            'written'.format(wmesh.name,element.name))
             T.toc()
     
     

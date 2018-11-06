@@ -2,23 +2,18 @@
 # -*- coding: utf-8 -*-
 
 import rectpack as rp #float2dec,newPacker
-import numpy as np
 import logging
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+
+
 
 
 class RectangleArranger(object):
 
     """ Takes a list of elements, gets their groundtruth and calculates the
-        translations for each element to fit in the scene without overlap
-        b, x, y, w, h, rid = rect
-
-         b[0] - Bin index
-         x[1] - Rectangle bottom-left corner x coordinate
-         y[2] - Rectangle bottom-left corner y coordinate
-         w[3] - Rectangle width
-         h[4] - Rectangle height
-         rid - User asigned rectangle id or None
-    """ 
+        translations for each element to fit in the scene without overlap """
+     
     def __init__(self,height, width):
         """TODO: to be defined1. """
         self._height = height
@@ -30,12 +25,19 @@ class RectangleArranger(object):
         
     def packstuff(self,elements):
         for ele in elements:
-            self.logger.info('{} processed'.format(ele.name))
+            self.logger.info('{} is processed'.format(ele.name))
             _,hw= ele.ground_truth
-            hw = (rp.float2dec(hw[0], 2), rp.float2dec(hw[1], 2))
+            hw = ((rp.float2dec(hw[0], 3), rp.float2dec(hw[1], 3)))
             self.packer.add_rect(*hw,rid=ele.name)
             rect = self.packer.rect_list()[-1]
             self._apply_translation(ele,rect)
+
+#        rects = self.packer.rect_list()
+#        
+#        for ele in elements:
+#            rect = [rect for rect in rects if rect[-1] == ele.name]
+#            assert len(rect) is 1, 'only one rectangle makes sense here...'
+                
         return self.packer
 
     def _calcualte_translation(self,element):
@@ -51,11 +53,49 @@ class RectangleArranger(object):
         :returns: TODO
 
         """
-        self.logger.info('{} translated'
-                ' by (x:{}, y:{})'.format(element.name,float(rect[1]),float(rect[2])))
-        transl = np.array([-element.lower_left[0],-element.lower_left[1],0]) + \
-                    np.array([float(rect[1]),float(rect[2]),0.0])
-        element.translate(transl)
+        
+#        self.logger.info('we came this far:)')
+        element.translate([float(rect[3]),float(rect[4]),0.0])
+
+
+
+if __name__ == "__main__":
+    recs = [(10,20),(40,30),(4,7),(8,9),(25,10)]
+
+    height = 150
+    width = 150
+
+
+
+    mypacker = RectangleArranger(height,width)
+
+    packer = rp.newPacker(rp.PackingMode.Online,rotation=False)
+    packer.add_bin(width,width)
+    for rec in recs:
+        print(*rec)
+        packer.add_rect(*rec)
+        
+
+    # Create figure and axes
+    fig,ax = plt.subplots(1)
+    plt.xlim(150)
+    plt.ylim(150)
+
+    print('len: {}'.format(len(packer)))
+    for rec in packer.rect_list():
+#        logger.info('höhe: {} '
+#                    'breite: {} '
+#                    'x: {} '
+#                    'y: {} '.format(rec[3],rec[4],rec[1],rec[1]))
+        
+        tmp = patches.Rectangle((float(rec[1]),float(rec[2])),float(rec[3]),float(rec[4]),
+                linewidth=1,edgecolor='b',facecolor='r')
+        ax.add_patch(tmp)
+
+    plt.show()
+
+
+
 
 
 
@@ -91,4 +131,4 @@ class RectangleArranger(object):
 ## h - Rectangle height
 ## rid - User asigned rectangle id or None:
 
-print('end')
+
