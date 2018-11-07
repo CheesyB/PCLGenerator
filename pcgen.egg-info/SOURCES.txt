@@ -1,0 +1,5 @@
+README.md
+pcgen.egg-info/PKG-INFO
+pcgen.egg-info/SOURCES.txt
+pcgen.egg-info/dependency_links.txt
+pcgen.egg-info/top_level.txt
