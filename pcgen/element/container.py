@@ -66,9 +66,9 @@ class Container(Element):
     # scale first 
     def rand_scale(self):
         self.logger.info('random scale'.format())
-        scale = [np.random.normal(1,0.2),
-                 np.random.normal(1,0.2),
-                 np.random.normal(1,0.1),1] 
+        scale = [np.random.normal(0.5,0.1),
+                 np.random.normal(0.3,0.1),
+                 np.random.normal(0.2,0.1),1] 
         S = np.diag(scale)
         for wmesh in self.wmeshes:
             wmesh.transform([S])

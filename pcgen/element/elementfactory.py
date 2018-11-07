@@ -67,8 +67,8 @@ class ElementFactory(object):
             self.logger.info('We got a {} ({})'.format(ctor.name,count)) 
             ele = ctor(ElementFactory.class_dict[ctor.name])
             ele.prefix = str(count)
-            ele.scale()
-            ele.rotate()
+            ele.rand_scale()
+            ele.rand_rotate()
             sequence.append(ele)
         return sequence
     

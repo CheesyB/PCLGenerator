@@ -31,18 +31,20 @@ if __name__ == "__main__":
 
     
     elefac = ef.ElementFactory() 
+    basem = basement.Basement((0,1))
+    basem.rand_scale()
+    basem.translate([5,5,0])
     eles = []
     eles.append(container.Container)
-    eles.append(basement.Basement)
     eles.append(hws.Hws)
     eles.append(scaffold.Scaffold)
     eles.append(house.House)
 
     [elefac.register_element(ele) for ele in eles] 
-    seq = elefac.get_random_sequence(5)
+    seq = elefac.get_random_sequence(20)
 
-    xlim = 5 
-    ylim = 5 
+    xlim = 15 
+    ylim = 15 
     kst = pk.RectangleArranger(float2dec(xlim,2),float2dec(ylim,2))
     packer = kst.packstuff(seq)
     rects = packer.rect_list()    
@@ -53,25 +55,9 @@ if __name__ == "__main__":
                     'höhe: {} ' 
                     'breite: {} '.format(rec[1],rec[2],rec[3],rec[4]))
         saver.save_as_pc(ele) 
-
+    saver.save_as_pc(basem) # adding this will place the others on top 
 #    ax.autoscale()
 #    plt.show()
     
-            
-        
-
-
-        
-
-
-
-
-
-
-
-
-
-
-
 
 

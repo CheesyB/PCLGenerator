@@ -13,4 +13,4 @@ from element.scaffold_test import ScaffoldTest
 from element.elementfactory_test import ElementFactoryTest
 
 if __name__ == "__main__":
-    unittest.main()
+    unittest.main(verbosity=2)

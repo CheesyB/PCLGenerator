@@ -93,9 +93,9 @@ class House(Element):
     # scale first 
     def rand_scale(self):
         self.logger.info('random scale'.format())
-        scale = [np.random.normal(1,0.2),
-                 np.random.normal(1,0.2),
-                 np.random.normal(1,0.1),1] 
+        scale = [np.random.normal(3,1),
+                 np.random.normal(1.5,0.7),
+                 np.random.normal(1.5,0.6),1] 
         S = np.diag(scale)
         for wmesh in self.wmeshes:
             wmesh.transform([S])
