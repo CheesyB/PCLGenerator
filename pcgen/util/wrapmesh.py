@@ -28,7 +28,7 @@ class WrapMesh(object):
         self._class_name = classname
         self.class_num = classnum  
         self.num_points = numpoints 
-        self.logger = logging.getLogger('generator.simples.WrapMesh')
+        self.logger = logging.getLogger('pcgen.util.utiutillWrapMesh')
   
     
     def __str__(self):

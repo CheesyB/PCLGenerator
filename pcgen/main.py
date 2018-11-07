@@ -47,15 +47,15 @@ if __name__ == "__main__":
     packer = kst.packstuff(seq)
     rects = packer.rect_list()    
 
-    for ele,rec in zip(eles,rects):
+    for ele,rec in zip(seq,rects):
         logger.debug('x: {} '
                     'y: {} '
                     'höhe: {} ' 
                     'breite: {} '.format(rec[1],rec[2],rec[3],rec[4]))
         saver.save_as_pc(ele) 
 
-    ax.autoscale()
-    plt.show()
+#    ax.autoscale()
+#    plt.show()
     
             
         

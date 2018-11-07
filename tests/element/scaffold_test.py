@@ -6,7 +6,7 @@ from pcgen.element import scaffold
 
 
 
-class BasementTest(unittest.TestCase):
+class ScaffoldTest(unittest.TestCase):
    
     def setUp(self):
         self.ele = scaffold.Scaffold(0)

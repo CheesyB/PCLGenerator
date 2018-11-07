@@ -31,7 +31,7 @@ class ElementSaver(object):
         if self._color_dict is None:
             self._color_dict = ElementSaver.default_color_dict
         self._data_path = data_path
-        self.logger = logging.getLogger('generator.'+__name__+'.Saver')
+        self.logger = logging.getLogger(__name__)
         
     def save_as_mesh(self,element):
         raise NotImplemented
@@ -51,7 +51,7 @@ class ElementSaver(object):
 
             dataframe = pa.DataFrame(columns=['x','y','z','red','green','blue'],data=points)
             pyntcloud = pc.PyntCloud(dataframe)
-            pyntcloud.to_file(self._data_path + '/pc_{}_{}.ply'.format(wmesh.name,element.name))
+            pyntcloud.to_file(self._data_path + '/pc_{}_{}.ply'.format(wmesh.name,element.savename))
             self.logger.info('pc_{}_{}.ply  pointcloud(color)'
                             'written'.format(wmesh.name,element.name))
             T.toc()

@@ -23,9 +23,14 @@ class Element(object):
         """
         self.wmeshes = wmeshes
         self.name = name
+        self.prefix = 'raw'
         self.logger = logging.getLogger('pcgen.element.(base)element')
         if isinstance(self.wmeshes,WrapMesh):
             self.wmeshes = [self.wmeshes]
+
+    @property
+    def savename(self):
+        return self.prefix + self.name
     
     
     @property

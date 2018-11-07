@@ -61,14 +61,15 @@ class ElementFactory(object):
     def get_random_sequence(self,howmany):
         sequence = []
         for _ in range(howmany):
-            element = random.choice(list(self.registered_elements))
-            self.registered_elements[element] += 1
-            self.logger.info('We got a {} and making it'
-                    ' {} of them'.format(element.name,self.registered_elements[element])) 
-            ele = element(ElementFactory.class_dict[element.name])
+            ctor = random.choice(list(self.registered_elements))
+            self.registered_elements[ctor] += 1
+            count = self.registered_elements[ctor]
+            self.logger.info('We got a {} ({})'.format(ctor.name,count)) 
+            ele = ctor(ElementFactory.class_dict[ctor.name])
+            ele.prefix = str(count)
             ele.scale()
             ele.rotate()
-            sequence.append(element)
+            sequence.append(ele)
         return sequence
     
 

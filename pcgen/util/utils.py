@@ -9,7 +9,7 @@ from .tictoc import TicToc
 
 
 def PyMesh2Ply(target):
-    logger = logging.getLogger('generator.'+__name__+'.PyMesh2Ply')
+    logger = logging.getLogger('pcgen.'+__name__+'.PyMesh2Ply')
     T=TicToc(logger)
     plymesh = tri.Trimesh(target.vertices.copy(),target.faces.copy()) 
     T.toc()
@@ -21,7 +21,7 @@ def SavePly(name,mesh):
             f.write(byts)
 
 def SamplePointCloud(mesh,num):
-    logger = logging.getLogger('generator.'+__name__+'.SamplePointCloud')
+    logger = logging.getLogger('pcgen.'+__name__+'.SamplePointCloud')
     T=TicToc(logger)
     npPoints,_ = tri.sample.sample_surface_even(mesh, num)
     paPoints = pa.DataFrame(columns=['x','y','z'],data=npPoints)
