@@ -1,17 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import logging
 import numpy as np
 import pymesh as pm
 import trimesh as tri
 import trimesh.transformations as trans
-from ..element import Element
-from ..tictoc import TicToc
-from ..wrapmesh import WrapMesh
-from ..utils import PyMesh2Ply
+from .element import Element
 from .house import House
-from .scaffold import Sacffold
-import logging
+from .scaffold import Scaffold
+from pcgen.util.tictoc import TicToc
+from pcgen.util.wrapmesh import WrapMesh
+from pcgen.util.utils import PyMesh2Ply
 
 
 
@@ -19,15 +19,16 @@ import logging
 class Hws(Element):
 
     """This is derived form the Element class"""
+    name = 'hws'
 
     def __init__(self,class_numbers):
 
-        self.logger = logging.getLogger('generator.simples.elements.hws')
-        reps = ** 
+        self.logger = logging.getLogger('pcgen.elements.hws')
+        reps = [2,2,2]
         T = TicToc(self.logger)
         
 
-        hws = House() # returns (roof,mesh)
+        hws = House(class_numbers[:2]) # returns (roof,mesh)
         hws.name = 'hws_ele'
         hws.wmeshes[0]._prefix = 'hws_'
         hws.wmeshes[1]._prefix = 'hws_'
@@ -36,7 +37,7 @@ class Hws(Element):
         transl = (1+width,0,0) 
         scale = [1*0.25,1,1,1]
         
-        scaffolds = Scaffold(reps)
+        scaffolds = Scaffold(class_numbers[2],reps)
         scaffolds.scale(scale)
         scaffolds.translate(transl)
         

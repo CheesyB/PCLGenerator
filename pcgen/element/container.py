@@ -5,10 +5,10 @@ import numpy as np
 import pymesh as pm
 import trimesh as tri
 import trimesh.transformations as trans
-from ..element import Element
-from ..tictoc import TicToc
-from ..wrapmesh import WrapMesh
-from ..utils import PyMesh2Ply
+from .element import Element
+from pcgen.util.tictoc import TicToc
+from pcgen.util.wrapmesh import WrapMesh
+from pcgen.util.utils import PyMesh2Ply
 import logging
 
 
@@ -17,11 +17,12 @@ import logging
 class Container(Element):
 
     """This is derived form the Element class"""
+    name = 'container'
 
     def __init__(self,class_number):
         
         self.thickness = 0.1
-        self.logger = logging.getLogger('generator.simples.elements.container')
+        self.logger = logging.getLogger('pcgen.element.container')
         
         T=TicToc(self.logger)
         

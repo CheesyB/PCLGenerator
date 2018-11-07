@@ -26,7 +26,7 @@ class RectangleArranger(object):
         self.rectangles= []
         self.packer = rp.newPacker(rp.PackingMode.Online,rotation=False)
         self.packer.add_bin(self._width,self._width)
-        self.logger = logging.getLogger('generator.arrangement.RectangleArranger')
+        self.logger = logging.getLogger('pcgen.arrangement.RectangleArranger')
         
     def packstuff(self,elements):
         for ele in elements:
@@ -37,14 +37,6 @@ class RectangleArranger(object):
             rect = self.packer.rect_list()[-1]
             self._apply_translation(ele,rect)
         return self.packer
-
-    def _calcualte_translation(self,element):
-        """ 
-        self.translations = {self.elements[i]:translation_matrix}
-        """
-        pass
-
-
 
     def _apply_translation(self,element,rect):
         """TODO: Docstring for apply_translation.

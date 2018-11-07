@@ -1,15 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import logging
 import numpy as np
 import pymesh as pm
 import trimesh as tri
 import trimesh.transformations as trans
-from ..element import Element
-from ..tictoc import TicToc
-from ..wrapmesh import WrapMesh
-from ..utils import PyMesh2Ply
-import logging
+from .element import Element
+from pcgen.util.tictoc import TicToc
+from pcgen.util.wrapmesh import WrapMesh
+from pcgen.util.utils import PyMesh2Ply
 
 
 
@@ -24,27 +24,26 @@ class Scaffold(Element):
         scaffolds type => List<WrapMesh> 
         Class type => int               """
     
-    def __init__(self,class_number):
+    def __init__(self,class_number,repetitions=[1,2,1]):
        
         self.class_number = class_number
-        self.logger = logging.getLogger('generator.simples.elements.scaffold')
-        reps = 
+        self.logger = logging.getLogger('pcgen.element.scaffold')
         T = TicToc(self.logger)
          
-        n = reps[0]*reps[1]*reps[2]
+        n = repetitions[0]*repetitions[1]*repetitions[2]
         
         scaffolds = []
         thickness = 0.1
         
-        scaling = [1/reps[0],1/reps[1],1/reps[2],1]
+        scaling = [1/repetitions[0],1/repetitions[1],1/repetitions[2],1]
         dx = scaling[0]
         dy = scaling[1]
         dz = scaling[2]
         count = 0 
 
-        for i in range(reps[0]):
-            for j in range(reps[1]):
-                for k in range(reps[2]):
+        for i in range(repetitions[0]):
+            for j in range(repetitions[1]):
+                for k in range(repetitions[2]):
                     count += 1
                     x =  i*dx
                     y =  j*dy 
@@ -95,9 +94,9 @@ class Scaffold(Element):
         scaffold = inflator.mesh
 
         scaffold = PyMesh2Ply(scaffold)
-        mesh = wm.WrapMesh(scaffold,'scaffold',self.class_number)
+        mesh = WrapMesh(scaffold,'scaffold',self.class_number)
         mesh.prefix = 'raw_'
-        element = ele.Element([mesh],'raw_scaffold_ele') 
+        element = Element([mesh],'raw_scaffold_ele') #not so clean here
 
         T.toc()
         return element 

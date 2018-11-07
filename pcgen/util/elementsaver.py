@@ -34,6 +34,7 @@ class ElementSaver(object):
         self.logger = logging.getLogger('generator.'+__name__+'.Saver')
         
     def save_as_mesh(self,element):
+        raise NotImplemented
         pass
 
     
@@ -69,4 +70,7 @@ class ElementSaver(object):
             except Exception as e:
                 print(e)
         self.logger.info(' {} files deleted'.format(i))
+
+
+
 

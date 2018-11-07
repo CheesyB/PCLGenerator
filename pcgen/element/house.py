@@ -1,15 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import logging
 import numpy as np
 import pymesh as pm
 import trimesh as tri
 import trimesh.transformations as trans
-from ..element import Element
-from ..tictoc import TicToc
-from ..wrapmesh import WrapMesh
-from ..utils import PyMesh2Ply
-import logging
+from pcgen.util.wrapmesh import WrapMesh 
+from pcgen.util.tictoc import TicToc
+from pcgen.util.utils import PyMesh2Ply
+from .element import Element
 
 
 
@@ -23,7 +23,7 @@ class House(Element):
     def __init__(self,class_numbers):
         
         self._roof_height = np.random.rand()
-        self.logger = logging.getLogger('generator.simples.elements.house')
+        self.logger = logging.getLogger('pcgen.element.house')
         T=TicToc(self.logger)
         
         pmin = np.array([-0.5,-0.5,0])
@@ -51,7 +51,7 @@ class House(Element):
         hull = tri.convex.convex_hull(vertices)
 
         body = tri.Trimesh(vertices=hull.vertices,faces=hull.faces)
-        bodymesh = wm.WrapMesh(body,'body',class_numbers[0])
+        bodymesh = WrapMesh(body,'body',class_numbers[0])
         bodymesh.prefix = 'reg_'
         
         
@@ -64,7 +64,7 @@ class House(Element):
         hull = tri.convex.convex_hull(vertices)
         
         roof = tri.Trimesh(vertices=hull.vertices,faces=hull.faces)
-        roofmesh = wm.WrapMesh(roof,'roof',class_numbers[1])
+        roofmesh = WrapMesh(roof,'roof',class_numbers[1])
         roofmesh.prefix = 'reg_'
         
         meshes = list((roofmesh,bodymesh)) 

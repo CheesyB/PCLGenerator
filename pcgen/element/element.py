@@ -7,8 +7,9 @@ import pandas as pa
 import numpy as np
 import pyntcloud as pc
 import trimesh.transformations as trans
-from .wrapmesh import WrapMesh 
-from .tictoc import TicToc
+from pcgen.util.wrapmesh import WrapMesh 
+from pcgen.util.tictoc import TicToc
+
 
 class Element(object):
 
@@ -22,7 +23,7 @@ class Element(object):
         """
         self.wmeshes = wmeshes
         self.name = name
-        self.logger = logging.getLogger('generator.simples.element')
+        self.logger = logging.getLogger('pcgen.element.(base)element')
         if isinstance(self.wmeshes,WrapMesh):
             self.wmeshes = [self.wmeshes]
     

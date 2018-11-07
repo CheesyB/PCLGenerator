@@ -33,13 +33,4 @@ def SamplePointCloud(mesh,num):
 
 
 
-def test():
-    print('Not Implemented')
-
-
-if __name__ == "__main__":
-    test()
-
-
-
 

@@ -1,15 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import logging
 import numpy as np
 import pymesh as pm
 import trimesh as tri
 import trimesh.transformations as trans
-from ..element import Element
-from ..tictoc import TicToc
-from ..wrapmesh import WrapMesh
-from ..utils import PyMesh2Ply
-import logging
+from .element import Element # this thing makes it not invocable directly
+from pcgen.util.tictoc import TicToc
+from pcgen.util.wrapmesh import WrapMesh
+from pcgen.util.utils import PyMesh2Ply
 
 
 
@@ -17,11 +17,11 @@ import logging
 class Basement(Element):
 
     """This is derived form the Element class"""
+    name = 'basement'
 
     def __init__(self,class_numbers):
-        """TODO: to be defined1. """
 
-        self.logger = logging.getLogger('generator.simples.elements.basement')
+        self.logger = logging.getLogger('pcgen.element.basement')
         T=TicToc(self.logger)
 
         box = tri.creation.box()
@@ -64,13 +64,6 @@ class Basement(Element):
         S = np.diag(scale)
         for wmesh in self.wmeshes:
             wmesh.transform([S])
-
-
-
-
-
-
-
 
 
 
