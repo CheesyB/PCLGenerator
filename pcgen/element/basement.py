@@ -20,10 +20,8 @@ class Basement(Element):
     name = 'basement'
 
     def __init__(self,class_numbers):
-
         self.logger = logging.getLogger('pcgen.element.basement')
         T=TicToc(self.logger)
-
         box = tri.creation.box()
         normal = np.array([0,0,1])
         origin = np.array([0,0,0])

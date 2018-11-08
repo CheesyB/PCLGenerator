@@ -22,7 +22,7 @@ class House(Element):
 
     def __init__(self,class_numbers):
         
-        self._roof_height = np.random.rand()
+        self._roof_height = np.random.normal(0.8,0.2)
         self.logger = logging.getLogger('pcgen.element.house')
         T=TicToc(self.logger)
         

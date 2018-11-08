@@ -24,7 +24,7 @@ class ElementFactory(object):
     """Docstring for ObjectFactory. """
     class_dict = {'basement':(0,1),
             'house':(2,3),
-            'hws':(2,3,5),
+            'hws':(2,3,8),
             'container':4,
             'scaffold':5}
 
@@ -60,11 +60,14 @@ class ElementFactory(object):
         containing a random amount of registerd elements """
     def get_random_sequence(self,howmany):
         sequence = []
+        totalcount = 0 
         for _ in range(howmany):
+            totalcount +=1 
             ctor = random.choice(list(self.registered_elements))
             self.registered_elements[ctor] += 1
             count = self.registered_elements[ctor]
-            self.logger.info('We got a {} ({})'.format(ctor.name,count)) 
+            self.logger.info('We got the ({1}th) {0}'
+                             ' | ({2}/{3})'.format(ctor.name,count,totalcount,howmany)) 
             ele = ctor(ElementFactory.class_dict[ctor.name])
             ele.prefix = str(count)
             ele.rand_scale()

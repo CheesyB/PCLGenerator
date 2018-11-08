@@ -24,12 +24,13 @@ class Element(object):
         self.wmeshes = wmeshes
         self.name = name
         self.prefix = 'raw'
-        self.logger = logging.getLogger('pcgen.element.(base)element')
+        self.baselogger = logging.getLogger('pcgen.element.(base)element')
         if isinstance(self.wmeshes,WrapMesh):
             self.wmeshes = [self.wmeshes]
 
     @property
     def savename(self):
+        self.logger.debug('prefix: {} name: {}'.format(self.prefix,self.name))
         return self.prefix + self.name
     
     
@@ -65,7 +66,8 @@ class Element(object):
         ymax = max(vert_cleaned[:,1])
         width = xmax - xmin
         height  = ymax - ymin 
-        return (xmin,ymin),(width,height) 
+        #scale it so that pc are not touching
+        return (xmin,ymin),(width*1.1,height*1.1) 
 
 
     def transform(self,transl,scale,alpha):
@@ -114,6 +116,6 @@ class Element(object):
     
     def add_element(self,other_element):
         self.wmeshes.extend(other_element.wmeshes)
-        self.logger.info(' added element ' +
+        self.baselogger.info(' added element ' +
                         '{} to {}'.format(other_element.name, self.name))
 

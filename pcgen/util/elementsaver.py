@@ -38,8 +38,8 @@ class ElementSaver(object):
         pass
 
     """ This return a hopefully destinct color for int; actually a colormap """
-    def get_colo(self,val):
-            color = np.array([0.22 * val % 1,
+    def get_color(self,val):
+            color = np.array([0.82 * val % 1,
                               0.33 * val % 1,
                               0.55 * val % 1])
             return color
@@ -48,18 +48,24 @@ class ElementSaver(object):
     
     def save_as_pc(self,element):
         for wmesh in element.wmeshes:
-            T = TicToc(self.logger,' sample pointcloud as np.array \
-                    with color {} from {}'.format(color,str(wmesh)))
+            T = TicToc(self.logger,' sample pointcloud as np.array'
+                    'from {}'.format(str(wmesh)))
             points = wmesh.pointcloud_class 
-            color = points[-1][-1]
+            class_number = points[-1,-1]    # get the last point on the right => a class point
+            if not np.all(points[:,3] == class_number):
+                self.logger.warning('Okay, dude we got a seriouse problem here'
+                                    ', I dedected more than one class in the pointcloud.'
+                                    'This must not happend')
+            color = self.get_color(class_number)
             class_points = np.array([color for _ in range(points.shape[0])])
+            points = points[:,:3]    # drop the class_number and add color
             points = np.concatenate((points,class_points), axis=1)
 
             dataframe = pa.DataFrame(columns=['x','y','z','red','green','blue'],data=points)
             pyntcloud = pc.PyntCloud(dataframe)
             pyntcloud.to_file(self._data_path + '/pc_{}_{}.ply'.format(wmesh.name,element.savename))
-            self.logger.info('pc_{}_{}.ply  pointcloud(color)'
-                            'written'.format(wmesh.name,element.name))
+            self.logger.info('pc_{}_{}.ply  pointcloud (color) '
+                            'written'.format(wmesh.name,element.savename))
             T.toc()
     
     

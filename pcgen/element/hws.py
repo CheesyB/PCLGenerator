@@ -29,11 +29,10 @@ class Hws(Element):
         
 
         hws = House(class_numbers[:2]) # returns (roof,mesh)
-        hws.name = 'hws_ele'
         hws.wmeshes[0]._prefix = 'hws_'
         hws.wmeshes[1]._prefix = 'hws_'
         
-        width = 0.01
+        width = 0.001
         transl = (1+width,0,0) 
         scale = [1*0.25,1,1,1]
         
@@ -45,6 +44,9 @@ class Hws(Element):
         wmeshes.extend(scaffolds.wmeshes)
         
         Element.__init__(self,wmeshes,'hws')
+        center = self.entire_mesh.center_mass
+        center[2] = 0
+        self.translate(-center)
 
         T.toc() 
 

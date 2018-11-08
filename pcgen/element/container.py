@@ -22,8 +22,7 @@ class Container(Element):
     def __init__(self,class_number):
         
         self.thickness = 0.1
-        self.logger = logging.getLogger('pcgen.element.container')
-        
+        self.logger = logging.getLogger('pcgen.element.container') # define here, otherwise logger
         T=TicToc(self.logger)
         
         #Big box minus smaller box inside equals simple container
@@ -43,7 +42,6 @@ class Container(Element):
         mesh.prefix = 'reg_'
 
         Element.__init__(self,mesh,'container')
-
         T.toc()
 
     
