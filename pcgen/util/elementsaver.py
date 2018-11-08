@@ -37,15 +37,21 @@ class ElementSaver(object):
         raise NotImplemented
         pass
 
+    """ This return a hopefully destinct color for int; actually a colormap """
+    def get_colo(self,val):
+            color = np.array([0.22 * val % 1,
+                              0.33 * val % 1,
+                              0.55 * val % 1])
+            return color
+
     
     
     def save_as_pc(self,element):
         for wmesh in element.wmeshes:
-            color = self._color_dict[str(wmesh)] 
             T = TicToc(self.logger,' sample pointcloud as np.array \
                     with color {} from {}'.format(color,str(wmesh)))
-            
-            points = wmesh.pointcloud 
+            points = wmesh.pointcloud_class 
+            color = points[-1][-1]
             class_points = np.array([color for _ in range(points.shape[0])])
             points = np.concatenate((points,class_points), axis=1)
 
