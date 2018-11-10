@@ -4,13 +4,14 @@
 import logging 
 import numpy as np
 from pcgen.util.elementsaver import ElementSaver 
+from pcgen.util.plotrectangles import PlotRectangles
+from pcgen.scene.scene import Scene
 from pcgen.element import elementfactory as ef
 from pcgen.element import container 
 from pcgen.element import basement
 from pcgen.element import house
 from pcgen.element import hws
 from pcgen.element import scaffold
-from pcgen.util.plotrectangles import PlotRectangles
 from rectpack import float2dec,newPacker
 import arrangement.pack as pk
 import matplotlib.pyplot as plt
@@ -48,18 +49,36 @@ if __name__ == "__main__":
     seq = elefac.get_random_sequence(8)
 
     kst = pk.RectangleArranger(float2dec(xlim,2),float2dec(ylim,2))
-    packed_elements = kst.packstuff(seq)
+    elements = kst.packstuff(seq)
+    packed_elements = kst.packed_elements
+
+    fistScene = Scene(elements)
+    
+    Dataset.append(fistScene) 
     
     PlotRectangles(packed_elements)
-
     for rec,ele in packed_elements:
         logger.debug('x: {} '
                     'y: {} '
                     'höhe: {} ' 
                     'breite: {} '.format(rec[1],rec[2],rec[3],rec[4]))
         saver.save_as_pc(ele) 
+    
     saver.save_as_pc(basem) # adding this will place the others on top 
     plt.show()
-    
+   
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

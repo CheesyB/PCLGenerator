@@ -3,7 +3,6 @@
 
 
 import unittest
-import trimesh as tri
 from pcgen.element import elementfactory as ef
 from pcgen.element import container 
 from pcgen.element import basement 

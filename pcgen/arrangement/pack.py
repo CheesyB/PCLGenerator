@@ -20,28 +20,34 @@ class RectangleArranger(object):
          rid - User asigned rectangle id or None
     """ 
     def __init__(self,height, width):
-        """TODO: to be defined1. """
+        """TODO: Some Bug is appearing. Rectangles do not cover most efficiently"""
         self._height = height
         self._width = width
         self._processed_rectangles = 0
         self.rectangles= []
         self.packer = rp.newPacker(rp.PackingMode.Online,rotation=False)
         self.packer.add_bin(self._width,self._width)
+        self._packed_elements = [] 
         self.logger = logging.getLogger('pcgen.arrangement.RectangleArranger')
+
+    @property
+    def packed_elements(self):
+        return self._packed_elements
         
     """ gettin ugly here. The packer does not indicate if it was able to pack rect into bin 
         Thus, checks are performed """
     def packstuff(self,elements):
         listlength = 0
-        packed_elements = []
         for ele in elements:
             rect_ele= self._process_element(ele)
             if rect_ele is not None:
                 self._apply_translation(rect_ele)
-                packed_elements.append(rect_ele)
+                self._packed_elements.append(rect_ele)
                 
-        self.logger.info(' I packed {}/{} elements'.format(len(packed_elements),len(elements))) 
-        return packed_elements
+        self.logger.info(' I packed {}/{}'
+                ' elements'.format(len(self._packed_elements),len(elements))) 
+        only_elements = [ele for rect,ele in self._packed_elements]
+        return only_elements 
 
     
     def _packer_changed(self):

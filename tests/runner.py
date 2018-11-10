@@ -11,6 +11,8 @@ from element.house_test import HouseTest
 from element.hws_test import HwsTest
 from element.scaffold_test import ScaffoldTest
 from element.elementfactory_test import ElementFactoryTest
+from arrangement.pack_test import RectangleArrangerTest
+from scene.scene_test import Scene
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

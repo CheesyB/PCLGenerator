@@ -23,10 +23,8 @@ class HwsTest(unittest.TestCase):
         self.assertEqual(pointcloud_class.shape[1],4,' dims not correct')
     
     def test_entire_mesh(self):
-        try:
             bigmesh = self.ele.entire_mesh
-        except ValueError:
-            self.fail("Element.entire_mesh raised ExceptionType unexpectedly!")
+            self.assertTrue(bigmesh)
     
     def test_ground_truth(self):
             gt = self.ele.ground_truth
