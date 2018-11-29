@@ -51,7 +51,7 @@ class Hws(Element):
         T.toc() 
 
     def rand_translate(self):
-        self.logger.info('random translation'.format())
+        self.logger.debug('random translation'.format())
         translation = [np.random.uniform(-1,1),np.random.uniform(-1,1),0] 
         lower_left = self.lower_left
         for wmesh in self.wmeshes:
@@ -59,7 +59,7 @@ class Hws(Element):
    
     #rotate second 
     def rand_rotate(self):
-        self.logger.info('random rotation'.format())
+        self.logger.debug('random rotation'.format())
         alpha = np.random.uniform(0,360)
         zaxis = [0,0,1] 
         R = trans.rotation_matrix(alpha,zaxis)
@@ -68,7 +68,7 @@ class Hws(Element):
 
     # scale first 
     def rand_scale(self):
-        self.logger.info('random scale'.format())
+        self.logger.debug('random scale'.format())
         scale = [np.random.normal(3,1),
                  np.random.normal(1.5,0.4),
                  np.random.normal(1.5,0.6),1] 

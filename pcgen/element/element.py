@@ -15,7 +15,7 @@ class Element(object):
 
     """Docstring for Element. """
 
-    def __init__(self,wmeshes,name):
+    def __init__(self,wmeshes,name,**kwargs):
         """TODO: to be defined1.
 
         :wmeshes: TODO
@@ -27,6 +27,10 @@ class Element(object):
         self.baselogger = logging.getLogger('pcgen.element.(base)element')
         if isinstance(self.wmeshes,WrapMesh):
             self.wmeshes = [self.wmeshes]
+        try
+            self._transformer = kwargs['transformer']
+        except
+            self.baselogger.debug('no transformer supplied')
 
     @property
     def savename(self):

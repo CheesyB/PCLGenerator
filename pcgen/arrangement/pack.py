@@ -53,13 +53,13 @@ class RectangleArranger(object):
     def _packer_changed(self):
         dif =  len(self.packer.rect_list()) - self._processed_rectangles 
         if dif < 0 or dif > 1:
-            self.logger.info('dif: {}'.format(dif))
+            self.logger.critical('dif: {}'.format(dif))
             raise Exception('This is a bug')
         elif dif == 1:
-            self.logger.info('packer changed: Yes!')
+            self.logger.debug('packer changed: Yes!')
             return True 
         elif dif == 0:
-            self.logger.info('packer changed: No!')
+            self.logger.debug('packer changed: No!')
             return False
     
     
@@ -78,7 +78,7 @@ class RectangleArranger(object):
             
             if self._packer_changed():
                 self._processed_rectangles += 1
-                self.logger.info('{} processed (w:{:2.2f})'
+                self.logger.debug('{} processed (w:{:2.2f})'
                             ',(b:{:2.2f})'.format(ele.name,hw[0],hw[1]))
                 return (self.packer.rect_list()[-1],ele)
             else:
@@ -86,7 +86,7 @@ class RectangleArranger(object):
                 return None
                 #raise Exception('why has it not changed?')
         else:
-            raise Exception('why has it changed?')
+            raise Exception('why has the packer changed?')
         
     
     

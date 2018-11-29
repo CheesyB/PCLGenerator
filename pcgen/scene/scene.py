@@ -4,8 +4,9 @@
 import logging 
 import numpy as np
 import pandas as pd
-import pyntcloud as pc
+from pyntcloud  import PyntCloud 
 from collections import Counter
+from pcgen.util import tictoc
 
 
 class Scene(object):
@@ -19,17 +20,25 @@ class Scene(object):
         :elements: TODO
 
         """
-        self._elements = elements
-        self._all_classes = []
-        self._pointcloud = self._sample_pointcloud(elements)
+        self._elements = elements 
+        self._all_classes = [] 
+        self._pointcloud = self._sample_pointcloud(elements) 
         self.logger = logging.getLogger('pcgen.scene.scene.Scene')
         self.logger.info(' classes: {}'.format(self.occurence_per_class))
 
     def __len__(self):
         return self._pointcloud.shape[0] # number of points
+
+    def __str__(self):
+        string = ('number points: {}\n'
+        'number classes: {}\n'
+        'occ. per class: {}\n'.format(self.shape,
+                                            self.contained_classes,
+                                            self.occurence_per_class))
+        return string 
     
-    @property
-    def shape(self):
+    @property 
+    def shape(self): 
         return self._pointcloud.shape
 
     @property
@@ -51,13 +60,23 @@ class Scene(object):
     def pointcloud(self):
         return self._pointcloud
     
+    def get_nearest_neighbors(self,num_neighbors=3000):
+        T = tictoc.TicToc(self.logger)
+        self.logger.info('calc. the neighbors {}'.format(num_neighbors))
+        pc_df = pd.DataFrame(self._pointcloud,columns=['x','y','z','class_number']) 
+        pc = PyntCloud(pc_df)
+        neighbors = pc.get_neighbors(k=num_neighbors)
+        T.toc()
+        return neighbors
+            
+    
     def _sample_pointcloud(self,elements):
         pc_scene = np.empty([1,4]) # fist line will be deleted later
         for ele in self._elements:
             for wmesh in ele.wmeshes:
                 pc = wmesh.pointcloud_class      
                 self._all_classes.append(int(pc[-1][-1]))
-                pc_scene = np.append(pc_scene,pc,axis=0) #inplace
+                pc_scene = np.append(pc_scene,pc,axis=0) #inplace?
         pc_scene = np.delete(pc_scene,0,0) 
         return pc_scene
         

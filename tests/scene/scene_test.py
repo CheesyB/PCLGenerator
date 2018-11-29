@@ -18,7 +18,7 @@ class SceneTest(unittest.TestCase):
 
     def test_scene(self):
         scene = Scene(self.eles)
-        self.assertEqual(scene._pc_scene.shape[1],4)
+        self.assertEqual(scene._pointcloud.shape[1],4)
     
     def test_number_classes(self):
         scene = Scene(self.eles)
@@ -27,6 +27,12 @@ class SceneTest(unittest.TestCase):
     def test_occurence_per_class(self):
         scene = Scene(self.eles)
         self.assertEqual(scene.occurence_per_class,{0:1,1:1,2:1})
+    
+    def test_get_neatest_neighbors(self):
+        scene = Scene(self.eles)
+        self.assertEqual(scene.get_nearest_neighbors().shape[1],10000)
+
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

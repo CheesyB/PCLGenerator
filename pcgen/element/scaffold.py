@@ -57,7 +57,7 @@ class Scaffold(Element):
                     scaffolds.extend(mesh)
         
         
-        self.logger.info('total of {} scaffolds created'.format(n)) 
+        self.logger.debug('total of {} scaffolds created'.format(n)) 
 
         Element.__init__(self,scaffolds,'scaffold')
         center = self.entire_mesh.center_mass
@@ -107,7 +107,7 @@ class Scaffold(Element):
 
 
     def rand_translate(self):
-        self.logger.info('random translation'.format())
+        self.logger.debug('random translation'.format())
         translation = [np.random.uniform(-1,1),np.random.uniform(-1,1),0] 
         lower_left = self.lower_left
         for wmesh in self.wmeshes:
@@ -115,7 +115,7 @@ class Scaffold(Element):
    
     #rotate second 
     def rand_rotate(self):
-        self.logger.info('random rotation'.format())
+        self.logger.debug('random rotation'.format())
         alpha = np.random.uniform(0,360)
         zaxis = [0,0,1] 
         R = trans.rotation_matrix(alpha,zaxis)
@@ -124,7 +124,7 @@ class Scaffold(Element):
 
     # scale first 
     def rand_scale(self):
-        self.logger.info('random scale'.format())
+        self.logger.debug('random scale'.format())
         scale = [np.random.normal(0.8,0.3),
                  np.random.normal(1.3,0.2),
                  np.random.normal(0.8,0.1),1] 
