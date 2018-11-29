@@ -50,7 +50,9 @@ def save_pointcloud_color(points,data_path,color_func=None):
  
     
     assert points.shape[1] is 4, 'Shape komisch' 
-    
+    if(points.shape[0] is 0):
+        print('no points in cloud.. normal?')
+        return None
     class_points = np.array([get_color(class_number) for class_number in points[:,3]])
     points = points[:,:3]    # drop the class_number and add color
     points = np.concatenate((points,class_points), axis=1)

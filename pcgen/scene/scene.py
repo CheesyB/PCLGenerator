@@ -7,12 +7,16 @@ import pandas as pd
 from pyntcloud  import PyntCloud 
 from collections import Counter
 from pcgen.util import tictoc
+import ipdb
 
 
 class Scene(object):
 
-    """Docstring for Scene. """
-
+    """ This class holdes mulitple elements arranged together in the x,y-plane.
+        This composes a scene which is consumned by the hd5dataset. The hd5dataset 
+        slices the sene into parts of m-points and samples  m points form that.
+        These points become on "Image" of the a mini-batch """ 
+        
     def __init__(self,elements):
         """TODO: manage numbers of points
             
@@ -60,6 +64,7 @@ class Scene(object):
     def pointcloud(self):
         return self._pointcloud
     
+    #Mega zeitaufwendig...
     def get_nearest_neighbors(self,num_neighbors=3000):
         T = tictoc.TicToc(self.logger)
         self.logger.info('calc. the neighbors {}'.format(num_neighbors))
@@ -68,7 +73,17 @@ class Scene(object):
         neighbors = pc.get_neighbors(k=num_neighbors)
         T.toc()
         return neighbors
-            
+    
+    def one_slice(self,pmin,pmax):
+        pc = self.pointcloud
+        index_to_take = [] 
+        for index in range(pc.shape[0]):
+            point = (pc[index,0],pc[index,1])
+            if all(_min < pnt for _min,pnt in zip(pmin,point)) and \
+               all(_max > pnt for _max,pnt in zip(pmax,point)):
+                index_to_take.append(index) 
+        return np.take(pc,index_to_take,axis=0)
+                                            
     
     def _sample_pointcloud(self,elements):
         pc_scene = np.empty([1,4]) # fist line will be deleted later

@@ -27,9 +27,9 @@ class Element(object):
         self.baselogger = logging.getLogger('pcgen.element.(base)element')
         if isinstance(self.wmeshes,WrapMesh):
             self.wmeshes = [self.wmeshes]
-        try
+        try:
             self._transformer = kwargs['transformer']
-        except
+        except KeyError:
             self.baselogger.debug('no transformer supplied')
 
     @property

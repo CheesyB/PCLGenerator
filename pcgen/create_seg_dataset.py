@@ -49,10 +49,11 @@ if __name__ == "__main__":
 
     [elefac.register_element(ele) for ele in eles] 
 
-    path = '/home/tbreu/workbench/cpointnet/dataset/data/dataset100.hd5f'
+#    path = '/home/tbreu/workbench/cpointnet/dataset/data/dataset100.hd5f'
+    path = '../data/hdf5/tescht.hd5f'
     new_dataset = h5dataset.Dataset(path,None)
     
-    for i in range(100):
+    for i in range(1):
         
         seq = elefac.get_random_sequence(10)
 
@@ -76,7 +77,7 @@ if __name__ == "__main__":
 #        saver.save_as_pc(basem) # adding this will place the others on top 
 #        plt.show()
 #   
-    new_dataset.write_data()
+    new_dataset.write_data_equal_slices(xlim,ylim,11,11)
 
 
 

@@ -10,6 +10,8 @@ from scipy import spatial
 import h5py 
 sys.setrecursionlimit(10000)
 
+import ipdb
+
 
 class Dataset(object):
 
@@ -45,7 +47,7 @@ class Dataset(object):
         self._scenes.append(scene)
         self.logger.info('{}th scene added'.format(len(self._scenes)))
 
-    def write_data(self):
+    def write_data_kdtree(self):
         for idx,scene in enumerate(self._scenes):
             current_pc = scene.pointcloud.copy()
             grp = self._file.create_group('scene{}'.format(idx))
@@ -69,6 +71,37 @@ class Dataset(object):
             grp.attrs['scenes'] = count
 
 		
+    def write_data_equal_slices(self,length,width,n,m):
+        self.logger.info('Started writing data equal slices!')
+        for idx,scene in enumerate(self._scenes):
+            grp = self._file.create_group('scene{}'.format(idx))
+            grp.attrs['description'] =  str(scene)
+            if self._extended > 0:
+                grp.create_dataset('cloud',
+                                    data=scene.pointcloud,
+	                            dtype=np.float32)#we wirte the whole cloud
+            x = np.linspace(0,length,n)
+            y = np.linspace(0,width,m)
+            index_to_take = []
+            count_good = 1
+            count_bad = 1
+            for j in range(len(y)-1):
+                for i in range(len(x)-1):
+                    pmin = (x[i],y[j])                                                           
+                    pmax = (x[i+1],y[j+1])
+                    self.logger.debug('{} pmin:{}, pmax:{}'.format(count_good,pmin, pmax))
+                    pc_slice = scene.one_slice(pmin,pmax)
+                    if pc_slice.shape[0] < 2600:
+                        grp.create_dataset('slice{}'.format(count_good),
+                                        data=pc_slice,
+                                        dtype=np.float32)# pytorch demands float32 
+                        count_good += 1
+                    else:
+                        self.logger.info('{} too little points in'
+                                    'sample min 2500'.format(count_bad))
+                        count_bad += 1
+            self.logger.info('ratio: {:2.2f}'.format(count_good/(n*m)))
+            grp.attrs['patches'] = n*m
 
 
             
