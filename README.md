@@ -1,4 +1,4 @@
-LGenerator
+#PLGenerator
 This is my Master's thesis code for creating artificial point clouds from simple defined geometry or STL files.
 The code works as a pipeline where the end product is an HDF5-file.
 
