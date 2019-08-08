@@ -14,5 +14,6 @@ This approach was chosen, because of the lack of labeled training data (as so of
 PointNet and PointNet2 were trained on the DGX/P100-cluster from the LRZ in Garching. Due to this approach I had sufficient training,
 test and validation data at hand to properly train the NN. The results on the test data were reasonable.
 
-![](https://github.com/CheesyB/PCLGenerator/blob/master/pics/11Classes.pdf)
-![Inference with realworld data](url)
+![Green: correctly classified points](https://github.com/CheesyB/PCLGenerator/blob/master/pics/11Classes.png)
+![test case on realworld data](https://github.com/CheesyB/PCLGenerator/blob/master/pics/result_inference_with_origin.png-1.png)
+![problem on too big items](https://github.com/CheesyB/PCLGenerator/blob/master/pics/Results_twoPartsNotRecognizingpdf.pdf-1.png)
